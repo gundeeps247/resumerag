@@ -247,11 +247,23 @@ All optional. See [`.env.example`](.env.example).
 
 ## Deploying to Vercel
 
-1. Push the repository to GitHub and **Import** it in Vercel (framework preset: Next.js — `vercel.json` is included).
-2. Choose how the deployed site generates answers:
-   - **No server model (recommended for a free portfolio demo):** set `LLM_PROVIDER=none`. Retrieval, citations, the pipeline trace, Resume X-ray rules, JD matching, the consistency checker and evaluation all work; answers are evidence-only. Visitors with Ollama can switch to **Settings → Language model → Ollama on this computer** for full answers generated privately on their own machine.
-   - **Hosted open-weight model:** set `LLM_PROVIDER=openai-compatible` plus `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_API_KEY`, `OPENAI_COMPAT_MODEL`, and protect it with `APP_ACCESS_CODE`.
-3. Deploy. No database, storage bucket or GPU is required: the heavy work happens in visitors' browsers.
+**ResumeRAG is one deployment.** There is no separate frontend and backend to host: a single `next build` produces both, and Vercel serves them from the same project and the same domain.
+
+```mermaid
+flowchart LR
+  gh["git push to main"] --> build["Vercel build<br/>npm ci → next build"]
+  build --> cdn["Static pages, JS and the RAG Web Worker<br/>→ Vercel CDN (the frontend)"]
+  build --> fn["src/app/api/llm/chat · status<br/>→ Vercel Functions, Node.js (the backend)"]
+  cdn -. "same origin: no CORS, no second URL" .- fn
+```
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgundeeps247%2Fresumerag&project-name=resumerag&repository-name=resumerag)
+
+1. Click **Deploy with Vercel** above, or **Import** the GitHub repository at [vercel.com/new](https://vercel.com/new). `vercel.json` sets the framework, install/build commands and the chat function's 60 s limit; Node 22 comes from `package.json` → `engines`.
+2. **No environment variables are required.** On Vercel the server defaults to `LLM_PROVIDER=none`, so the live site works immediately: ingestion, hybrid retrieval, reranking, citations, the pipeline trace, Resume X-ray rules, JD matching, the consistency checker and evaluation all run in the visitor's browser, and answers are evidence-only (quoted, cited passages). Visitors who run Ollama can switch to **Settings → Language model → Ollama on this computer** for full generated answers, produced privately on their own machine.
+3. **Optional — generated answers for every visitor:** in **Project → Settings → Environment Variables** set `LLM_PROVIDER=openai-compatible`, `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_MODEL` (any OpenAI-compatible endpoint serving an open-weight model, e.g. a free-tier provider or your own vLLM server), then redeploy. Set `APP_ACCESS_CODE` to stop strangers spending your quota; the proxy also rate-limits per IP and caps output tokens.
+
+Every push to `main` redeploys production; every pull request gets its own preview URL. No database, storage bucket or GPU is involved — the heavy work happens in visitors' browsers.
 
 **Private mode from a deployed site.** Ollama must allow the site's origin:
 
