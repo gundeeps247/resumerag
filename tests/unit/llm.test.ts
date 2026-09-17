@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { extractJson, parseWithSchema } from "@/lib/llm/json";
 import { OllamaProvider } from "@/lib/llm/providers/ollama";
 import { OpenAICompatibleProvider } from "@/lib/llm/providers/openai-compatible";
+import { fetchLlmStatus, NO_SERVER_PROVIDER_MESSAGE, streamChat } from "@/lib/llm/client";
 import { chatRequestSchema } from "@/lib/llm/schema";
 import { readNdjson, readSse, withStallTimeout } from "@/lib/llm/stream";
 import type { StreamEvent } from "@/lib/llm/types";
@@ -149,6 +150,30 @@ describe("OpenAICompatibleProvider", () => {
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("https://api.example.com/v1/chat/completions");
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer secret");
+  });
+});
+
+describe("LLM client without a server provider", () => {
+  it("skips the chat request once the status endpoint reports provider none", async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url === "/api/llm/status")
+        return Response.json({ provider: "none", label: "No LLM configured", model: "", available: false, models: [] });
+      return Response.json({ error: "unexpected" }, { status: 503 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const status = await fetchLlmStatus({ mode: "server" });
+    expect(status.provider).toBe("none");
+    await expect(collect(streamChat({ mode: "server" }, [{ role: "user", content: "hi" }]))).rejects.toThrow(NO_SERVER_PROVIDER_MESSAGE);
+    expect(fetchMock.mock.calls.map((c) => c[0])).toEqual(["/api/llm/status"]);
+
+    // A later status check that finds a provider re-enables server generation.
+    fetchMock.mockImplementation(async () =>
+      Response.json({ provider: "ollama", label: "Ollama", model: "m", available: true, models: ["m"] }),
+    );
+    await fetchLlmStatus({ mode: "server" });
+    await collect(streamChat({ mode: "server" }, [{ role: "user", content: "hi" }])).catch(() => undefined);
+    expect(fetchMock.mock.calls.map((c) => c[0])).toContain("/api/llm/chat");
   });
 });
 

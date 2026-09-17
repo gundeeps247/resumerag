@@ -34,6 +34,15 @@ export interface LlmStatus extends ProviderStatus {
  */
 const STALL_LIMITS = { firstMs: 240_000, idleMs: 90_000 };
 
+/**
+ * Set from the last /api/llm/status response (polled by the UI). When the server reports that no
+ * provider is configured — the default on a Vercel deployment — generation fails fast here instead
+ * of sending a request that can only return 503, and callers fall back to evidence-only output.
+ */
+let serverHasNoProvider = false;
+
+export const NO_SERVER_PROVIDER_MESSAGE = "No LLM provider is configured on the server (LLM_PROVIDER=none).";
+
 export function streamChat(connection: LlmConnection, messages: ChatMessage[], options: GenerateOptions = {}): AsyncGenerator<StreamEvent> {
   return withStallTimeout((signal) => openStream(connection, messages, { ...options, signal }), {
     signal: options.signal,
@@ -50,6 +59,8 @@ async function* openStream(connection: LlmConnection, messages: ChatMessage[], o
     yield* provider.streamChat(messages, options);
     return;
   }
+
+  if (serverHasNoProvider) throw new Error(NO_SERVER_PROVIDER_MESSAGE);
 
   const { signal, ...rest } = options;
   const response = await fetch("/api/llm/chat", {
@@ -147,5 +158,7 @@ export async function fetchLlmStatus(connection: LlmConnection): Promise<LlmStat
   }
   const response = await fetch("/api/llm/status", { cache: "no-store" });
   if (!response.ok) throw new Error(`Status check failed (HTTP ${response.status}).`);
-  return (await response.json()) as LlmStatus;
+  const status = (await response.json()) as LlmStatus;
+  serverHasNoProvider = status.provider === "none";
+  return status;
 }

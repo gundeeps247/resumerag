@@ -149,7 +149,7 @@ Each stage earns its place: fusion raises recall over semantic search, reranking
 | Parsing        | **unpdf** (pdf.js) with layout reconstruction, **mammoth** (DOCX), custom Markdown/TXT | Page numbers and heading structure for citations                                                             |
 | Generation     | **Ollama** (default), OpenAI-compatible (optional), Hugging Face (optional)            | Free and local by default; provider abstraction                                                              |
 | Validation     | **zod** (API requests, LLM JSON outputs, env)                                          | Model output is untrusted input                                                                              |
-| Testing        | Vitest (105 unit tests), Playwright (E2E smoke), offline eval script                   |                                                                                                              |
+| Testing        | Vitest (106 unit tests), Playwright (E2E smoke), offline eval script                   |                                                                                                              |
 
 ## Project structure
 
@@ -207,7 +207,7 @@ Then open the app, click **Try the demo workspace**, and ask _"How did I handle 
 | Command                                                 | What it does                                                                                                                                                                                  |
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm run dev` / `npm run build` / `npm start`           | Develop, build, serve                                                                                                                                                                         |
-| `npm test`                                              | 105 unit tests (chunking, parsing, BM25, fusion, query expansion, retrieval, confidence, citations and verification, analysis rules, JD scoring, LLM providers and streaming, API validation) |
+| `npm test`                                              | 106 unit tests (chunking, parsing, BM25, fusion, query expansion, retrieval, confidence, citations and verification, analysis rules, JD scoring, LLM providers and streaming, API validation) |
 | `npm run test:e2e`                                      | Playwright smoke test (run `npx playwright install chromium` once)                                                                                                                            |
 | `npm run eval`                                          | Offline retrieval evaluation (`-- --grid` adds a chunk-size sweep, `-- --inspect --blocks` prints how each demo document was parsed and chunked)                                              |
 | `npm run typecheck` / `npm run lint` / `npm run format` | Quality checks                                                                                                                                                                                |
