@@ -27,6 +27,8 @@ const schema = z.object({
   HF_MODEL: z.string().default("Qwen/Qwen2.5-7B-Instruct"),
 
   LLM_MAX_OUTPUT_TOKENS: z.coerce.number().int().min(64).max(8192).default(1500),
+  /** Comma-separated extra models visitors may select. Hosted providers otherwise serve only their default model. */
+  LLM_ALLOWED_MODELS: z.string().optional(),
   /** Optional shared secret protecting the LLM proxy on public deployments. */
   APP_ACCESS_CODE: z.string().optional(),
   RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).max(10_000).default(30),

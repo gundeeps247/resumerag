@@ -3,7 +3,7 @@
  * reachable and which models it offers. Never returns secrets.
  */
 import { getServerEnv } from "@/lib/server/env";
-import { getServerProvider } from "@/lib/server/provider";
+import { getServerModelAllowlist, getServerProvider } from "@/lib/server/provider";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,5 +24,8 @@ export async function GET() {
   }
 
   const status = await provider.status();
-  return Response.json({ ...status, ...common }, { headers: { "Cache-Control": "no-store" } });
+  // Only offer models this deployment will actually serve.
+  const allowlist = getServerModelAllowlist();
+  const models = allowlist ? status.models.filter((m) => allowlist.includes(m)) : status.models;
+  return Response.json({ ...status, models, ...common }, { headers: { "Cache-Control": "no-store" } });
 }

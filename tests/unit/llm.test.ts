@@ -3,6 +3,7 @@ import { extractJson, parseWithSchema } from "@/lib/llm/json";
 import { OllamaProvider } from "@/lib/llm/providers/ollama";
 import { OpenAICompatibleProvider } from "@/lib/llm/providers/openai-compatible";
 import { fetchLlmStatus, NO_SERVER_PROVIDER_MESSAGE, streamChat } from "@/lib/llm/client";
+import { isModelAllowed, modelAllowlist } from "@/lib/llm/model-policy";
 import { chatRequestSchema } from "@/lib/llm/schema";
 import { readNdjson, readSse, withStallTimeout } from "@/lib/llm/stream";
 import type { StreamEvent } from "@/lib/llm/types";
@@ -174,6 +175,24 @@ describe("LLM client without a server provider", () => {
     await fetchLlmStatus({ mode: "server" });
     await collect(streamChat({ mode: "server" }, [{ role: "user", content: "hi" }])).catch(() => undefined);
     expect(fetchMock.mock.calls.map((c) => c[0])).toContain("/api/llm/chat");
+  });
+});
+
+describe("model allowlist", () => {
+  it("lets local Ollama use any model but pins hosted providers to their configured model", () => {
+    expect(isModelAllowed(modelAllowlist("ollama", "qwen2.5:7b-instruct"), "llama3.2")).toBe(true);
+
+    const hosted = modelAllowlist("openai-compatible", "llama-3.1-8b-instant");
+    expect(hosted).toEqual(["llama-3.1-8b-instant"]);
+    expect(isModelAllowed(hosted, "llama-3.1-8b-instant")).toBe(true);
+    expect(isModelAllowed(hosted, "some-expensive-model")).toBe(false);
+    expect(isModelAllowed(hosted, undefined)).toBe(true);
+  });
+
+  it("adds LLM_ALLOWED_MODELS to the default, trimming and de-duplicating", () => {
+    const list = modelAllowlist("huggingface", "Qwen/Qwen2.5-7B-Instruct", " meta-llama/Llama-3.1-8B-Instruct, Qwen/Qwen2.5-7B-Instruct ,");
+    expect(list).toEqual(["Qwen/Qwen2.5-7B-Instruct", "meta-llama/Llama-3.1-8B-Instruct"]);
+    expect(isModelAllowed(modelAllowlist("ollama", "qwen2.5:7b-instruct", "llama3.2"), "mistral")).toBe(false);
   });
 });
 

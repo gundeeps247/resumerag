@@ -260,7 +260,7 @@ create index on chunks using hnsw (embedding vector_cosine_ops);
 
 ## 23. LLM proxy design
 
-**Decision:** one streaming route (`/api/llm/chat`) returning NDJSON, zod-validated requests (≤40 messages, ≤120k characters), token cap, per-IP rate limit, optional access code, provider chosen only by server env (the client cannot point the server at arbitrary URLs → no SSRF), provider keys never sent to the browser.
+**Decision:** one streaming route (`/api/llm/chat`) returning NDJSON, zod-validated requests (≤40 messages, ≤120k characters), token cap, per-IP rate limit, optional access code, provider chosen only by server env (the client cannot point the server at arbitrary URLs → no SSRF), provider keys never sent to the browser, and a model allowlist: a visitor may pick any local Ollama model, but a hosted provider serves only its configured model plus `LLM_ALLOWED_MODELS`, so nobody can run an expensive model on the deployment's API key.
 
 **Trade-off:** the in-memory rate limiter is per server instance — on serverless it is best-effort (production: Redis/Upstash).
 

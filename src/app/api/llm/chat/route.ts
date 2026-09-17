@@ -5,10 +5,11 @@
  * forwards it to the configured provider and streams tokens back as NDJSON. Keeping the
  * provider call on the server means API keys (if any) never reach the browser.
  */
+import { isModelAllowed } from "@/lib/llm/model-policy";
 import { chatRequestSchema } from "@/lib/llm/schema";
 import { ProviderError, type StreamEvent } from "@/lib/llm/types";
 import { getServerEnv } from "@/lib/server/env";
-import { getServerProvider } from "@/lib/server/provider";
+import { getServerModelAllowlist, getServerProvider } from "@/lib/server/provider";
 import { RateLimiter } from "@/lib/server/rate-limit";
 
 export const runtime = "nodejs";
@@ -52,6 +53,9 @@ export async function POST(request: Request) {
   if (!parsed.success) return jsonError(400, parsed.error.issues[0]?.message ?? "Invalid request.");
 
   const { messages, temperature, maxTokens, json, model } = parsed.data;
+  if (!isModelAllowed(getServerModelAllowlist(), model)) {
+    return jsonError(400, `The model "${model}" is not enabled on this deployment. Choose the server default in Settings.`);
+  }
   const encoder = new TextEncoder();
 
   // The browser may disconnect mid-answer (tab closed, user pressed stop, stall timeout).

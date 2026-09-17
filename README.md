@@ -149,7 +149,7 @@ Each stage earns its place: fusion raises recall over semantic search, reranking
 | Parsing        | **unpdf** (pdf.js) with layout reconstruction, **mammoth** (DOCX), custom Markdown/TXT | Page numbers and heading structure for citations                                                             |
 | Generation     | **Ollama** (default), OpenAI-compatible (optional), Hugging Face (optional)            | Free and local by default; provider abstraction                                                              |
 | Validation     | **zod** (API requests, LLM JSON outputs, env)                                          | Model output is untrusted input                                                                              |
-| Testing        | Vitest (106 unit tests), Playwright (E2E smoke), offline eval script                   |                                                                                                              |
+| Testing        | Vitest (108 unit tests), Playwright (E2E smoke), offline eval script                   |                                                                                                              |
 
 ## Project structure
 
@@ -207,7 +207,7 @@ Then open the app, click **Try the demo workspace**, and ask _"How did I handle 
 | Command                                                 | What it does                                                                                                                                                                                  |
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm run dev` / `npm run build` / `npm start`           | Develop, build, serve                                                                                                                                                                         |
-| `npm test`                                              | 106 unit tests (chunking, parsing, BM25, fusion, query expansion, retrieval, confidence, citations and verification, analysis rules, JD scoring, LLM providers and streaming, API validation) |
+| `npm test`                                              | 108 unit tests (chunking, parsing, BM25, fusion, query expansion, retrieval, confidence, citations and verification, analysis rules, JD scoring, LLM providers and streaming, API validation) |
 | `npm run test:e2e`                                      | Playwright smoke test (run `npx playwright install chromium` once)                                                                                                                            |
 | `npm run eval`                                          | Offline retrieval evaluation (`-- --grid` adds a chunk-size sweep, `-- --inspect --blocks` prints how each demo document was parsed and chunked)                                              |
 | `npm run typecheck` / `npm run lint` / `npm run format` | Quality checks                                                                                                                                                                                |
@@ -235,17 +235,18 @@ The model can be switched at runtime in **Settings → Language model**. Embeddi
 
 All optional. See [`.env.example`](.env.example).
 
-| Variable                                         | Default                        | Purpose                                                                      |
-| ------------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------------- |
-| `LLM_PROVIDER`                                   | `ollama`                       | `ollama` \| `openai-compatible` \| `huggingface` \| `none`                   |
-| `OLLAMA_BASE_URL`                                | `http://localhost:11434`       | Ollama server used by the API route                                          |
-| `OLLAMA_MODEL`                                   | `qwen2.5:7b-instruct`          | Default model                                                                |
-| `OLLAMA_NUM_CTX`                                 | `8192`                         | Context window (Ollama's small default truncates RAG prompts)                |
-| `OPENAI_COMPAT_BASE_URL` / `_API_KEY` / `_MODEL` | –                              | Any OpenAI-compatible server (vLLM, LM Studio, llama.cpp, Groq, OpenRouter…) |
-| `HF_TOKEN` / `HF_MODEL`                          | – / `Qwen/Qwen2.5-7B-Instruct` | Hugging Face Inference Providers                                             |
-| `LLM_MAX_OUTPUT_TOKENS`                          | `1500`                         | Hard cap per request                                                         |
-| `RATE_LIMIT_PER_MINUTE`                          | `30`                           | Per-IP limit on the LLM proxy                                                |
-| `APP_ACCESS_CODE`                                | –                              | Optional shared secret for public deployments                                |
+| Variable                                         | Default                        | Purpose                                                                                      |
+| ------------------------------------------------ | ------------------------------ | -------------------------------------------------------------------------------------------- |
+| `LLM_PROVIDER`                                   | `ollama` (`none` on Vercel)    | `ollama` \| `openai-compatible` \| `huggingface` \| `none`                                   |
+| `OLLAMA_BASE_URL`                                | `http://localhost:11434`       | Ollama server used by the API route                                                          |
+| `OLLAMA_MODEL`                                   | `qwen2.5:7b-instruct`          | Default model                                                                                |
+| `OLLAMA_NUM_CTX`                                 | `8192`                         | Context window (Ollama's small default truncates RAG prompts)                                |
+| `OPENAI_COMPAT_BASE_URL` / `_API_KEY` / `_MODEL` | –                              | Any OpenAI-compatible server (vLLM, LM Studio, llama.cpp, Groq, OpenRouter…)                 |
+| `HF_TOKEN` / `HF_MODEL`                          | – / `Qwen/Qwen2.5-7B-Instruct` | Hugging Face Inference Providers                                                             |
+| `LLM_MAX_OUTPUT_TOKENS`                          | `1500`                         | Hard cap per request                                                                         |
+| `LLM_ALLOWED_MODELS`                             | –                              | Extra models visitors may pick; hosted providers otherwise serve only their configured model |
+| `RATE_LIMIT_PER_MINUTE`                          | `30`                           | Per-IP limit on the LLM proxy                                                                |
+| `APP_ACCESS_CODE`                                | –                              | Optional shared secret for public deployments                                                |
 
 ## Deploying to Vercel
 
@@ -263,7 +264,7 @@ flowchart LR
 
 1. Click **Deploy with Vercel** above, or **Import** the GitHub repository at [vercel.com/new](https://vercel.com/new). `vercel.json` sets the framework, install/build commands and the chat function's 60 s limit; Node 22 comes from `package.json` → `engines`.
 2. **No environment variables are required.** On Vercel the server defaults to `LLM_PROVIDER=none`, so the live site works immediately: ingestion, hybrid retrieval, reranking, citations, the pipeline trace, Resume X-ray rules, JD matching, the consistency checker and evaluation all run in the visitor's browser, and answers are evidence-only (quoted, cited passages). Visitors who run Ollama can switch to **Settings → Language model → Ollama on this computer** for full generated answers, produced privately on their own machine.
-3. **Optional — generated answers for every visitor:** in **Project → Settings → Environment Variables** set `LLM_PROVIDER=openai-compatible`, `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_MODEL` (any OpenAI-compatible endpoint serving an open-weight model, e.g. a free-tier provider or your own vLLM server), then redeploy. Set `APP_ACCESS_CODE` to stop strangers spending your quota; the proxy also rate-limits per IP and caps output tokens.
+3. **Optional — generated answers for every visitor:** in **Project → Settings → Environment Variables** set `LLM_PROVIDER=openai-compatible`, `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_MODEL` (any OpenAI-compatible endpoint serving an open-weight model, e.g. a free-tier provider or your own vLLM server), then redeploy. Visitors can only use the model you configured (add more with `LLM_ALLOWED_MODELS`); set `APP_ACCESS_CODE` to stop strangers spending your quota at all. The proxy also rate-limits per IP and caps output tokens.
 
 The live instance runs exactly this configuration: [resumerag-gold.vercel.app](https://resumerag-gold.vercel.app) (no environment variables set). Every push to `main` redeploys production; every pull request gets its own preview URL. No database, storage bucket or GPU is involved — the heavy work happens in visitors' browsers.
 

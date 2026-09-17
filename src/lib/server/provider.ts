@@ -2,6 +2,7 @@ import "server-only";
 import { HuggingFaceProvider } from "@/lib/llm/providers/huggingface";
 import { OllamaProvider } from "@/lib/llm/providers/ollama";
 import { OpenAICompatibleProvider } from "@/lib/llm/providers/openai-compatible";
+import { modelAllowlist } from "@/lib/llm/model-policy";
 import type { LLMProvider } from "@/lib/llm/types";
 import { getServerEnv } from "./env";
 
@@ -22,4 +23,11 @@ export function getServerProvider(): LLMProvider | null {
     case "none":
       return null;
   }
+}
+
+/** Models the browser may request on this deployment (null = any). See model-policy.ts. */
+export function getServerModelAllowlist(): string[] | null {
+  const env = getServerEnv();
+  const defaults = { ollama: env.OLLAMA_MODEL, "openai-compatible": env.OPENAI_COMPAT_MODEL, huggingface: env.HF_MODEL, none: "" };
+  return modelAllowlist(env.LLM_PROVIDER, defaults[env.LLM_PROVIDER], env.LLM_ALLOWED_MODELS);
 }
