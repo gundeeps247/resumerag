@@ -6,7 +6,9 @@
 
 Upload your resume, project reports, notes and job descriptions. ResumeRAG builds a private knowledge base **in your browser** and helps you prepare for interviews with answers you can trace back to the exact passage — using only open-source models and no paid APIs.
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6) ![Transformers.js](https://img.shields.io/badge/Transformers.js-ONNX%20in%20the%20browser-ffcc4d) ![Ollama](<https://img.shields.io/badge/LLM-Ollama%20(local)-222>) ![License](https://img.shields.io/badge/license-MIT-green) ![Paid APIs](https://img.shields.io/badge/paid%20APIs-none-15877c)
+**[Live demo → resumerag-gold.vercel.app](https://resumerag-gold.vercel.app)** · [Project overview](docs/PROJECT_OVERVIEW.md) · [Design decisions](docs/DESIGN_DECISIONS.md)
+
+[![CI](https://github.com/gundeeps247/resumerag/actions/workflows/ci.yml/badge.svg)](https://github.com/gundeeps247/resumerag/actions/workflows/ci.yml) ![Next.js](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6) ![Transformers.js](https://img.shields.io/badge/Transformers.js-ONNX%20in%20the%20browser-ffcc4d) ![Ollama](<https://img.shields.io/badge/LLM-Ollama%20(local)-222>) ![License](https://img.shields.io/badge/license-MIT-green) ![Paid APIs](https://img.shields.io/badge/paid%20APIs-none-15877c)
 
 </div>
 
@@ -263,16 +265,16 @@ flowchart LR
 2. **No environment variables are required.** On Vercel the server defaults to `LLM_PROVIDER=none`, so the live site works immediately: ingestion, hybrid retrieval, reranking, citations, the pipeline trace, Resume X-ray rules, JD matching, the consistency checker and evaluation all run in the visitor's browser, and answers are evidence-only (quoted, cited passages). Visitors who run Ollama can switch to **Settings → Language model → Ollama on this computer** for full generated answers, produced privately on their own machine.
 3. **Optional — generated answers for every visitor:** in **Project → Settings → Environment Variables** set `LLM_PROVIDER=openai-compatible`, `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_MODEL` (any OpenAI-compatible endpoint serving an open-weight model, e.g. a free-tier provider or your own vLLM server), then redeploy. Set `APP_ACCESS_CODE` to stop strangers spending your quota; the proxy also rate-limits per IP and caps output tokens.
 
-Every push to `main` redeploys production; every pull request gets its own preview URL. No database, storage bucket or GPU is involved — the heavy work happens in visitors' browsers.
+The live instance runs exactly this configuration: [resumerag-gold.vercel.app](https://resumerag-gold.vercel.app) (no environment variables set). Every push to `main` redeploys production; every pull request gets its own preview URL. No database, storage bucket or GPU is involved — the heavy work happens in visitors' browsers.
 
-**Private mode from a deployed site.** Ollama must allow the site's origin:
+**Private mode from a deployed site.** Ollama must allow the site's origin (below: the live demo; use your own deployment's URL if you forked it):
 
 ```bash
 # macOS
-launchctl setenv OLLAMA_ORIGINS "https://your-app.vercel.app" && (quit and reopen Ollama)
+launchctl setenv OLLAMA_ORIGINS "https://resumerag-gold.vercel.app" && (quit and reopen Ollama)
 # Windows (PowerShell), then restart Ollama from the tray
-setx OLLAMA_ORIGINS "https://your-app.vercel.app"
-# Linux (systemd): add Environment="OLLAMA_ORIGINS=https://your-app.vercel.app" via `sudo systemctl edit ollama`
+setx OLLAMA_ORIGINS "https://resumerag-gold.vercel.app"
+# Linux (systemd): add Environment="OLLAMA_ORIGINS=https://resumerag-gold.vercel.app" via `sudo systemctl edit ollama`
 ```
 
 Chrome, Edge and Firefox allow an HTTPS page to call `http://localhost`; the browser may ask for local-network permission. Safari may block it.
