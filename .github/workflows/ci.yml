@@ -1,0 +1,31 @@
+# Typecheck, lint, unit tests and a production build on every push and pull request.
+# The Playwright end-to-end test (`npm run test:e2e`) is deliberately not run here: it
+# downloads ~60 MB of ONNX models from the Hugging Face Hub into a real browser, which
+# makes CI slow and dependent on a third-party CDN. Run it locally before releasing.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Unit tests
+        run: npm test
+      - name: Build
+        run: npm run build
+        env:
+          LLM_PROVIDER: none

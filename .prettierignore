@@ -1,0 +1,7 @@
+.next
+node_modules
+.cache
+public/demo
+public/eval
+package-lock.json
+src/components/ui

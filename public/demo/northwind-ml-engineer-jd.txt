@@ -1,0 +1,33 @@
+Machine Learning Engineer (New Graduate) - Northwind Analytics
+Location: Hybrid (2 days in office) | Full-time | Demo job description (fictional)
+
+ABOUT THE ROLE
+Northwind Analytics builds forecasting and decision-intelligence products for retail and logistics companies. As a Machine Learning Engineer on the Customer Intelligence team, you will take models from prototype to production and help our customers understand why their customers leave, buy and return.
+
+RESPONSIBILITIES
+- Design, train and evaluate machine learning models for demand forecasting and customer analytics, including churn and lifetime-value models.
+- Deploy models to production and monitor their performance, data quality and data drift.
+- Build reliable data pipelines and features in collaboration with the data engineering team.
+- Design and analyse A/B tests and communicate results clearly to product managers and customers.
+- Contribute to our LLM-powered analyst assistant, which uses retrieval-augmented generation (RAG) over customer documentation.
+
+REQUIREMENTS
+- Bachelor's degree in Computer Science, Statistics or a related field.
+- Strong programming skills in Python and SQL.
+- Solid understanding of machine learning fundamentals: supervised learning, evaluation metrics, overfitting, and class imbalance.
+- Hands-on experience with PyTorch or TensorFlow, and with scikit-learn.
+- Experience deploying models behind REST APIs and packaging services with Docker.
+- Familiarity with at least one cloud platform (AWS or GCP).
+- Clear written and verbal communication.
+
+NICE TO HAVE
+- Experience with Kubernetes and MLOps tooling such as MLflow or Kubeflow.
+- Experience with time-series forecasting.
+- Experience building semantic search or retrieval-augmented generation (RAG) systems.
+- Experience with Apache Spark or other big-data tools.
+- Experience running experiments on an A/B testing platform.
+
+WHAT WE OFFER
+- Mentorship from senior ML engineers and a dedicated learning budget.
+- Ownership of real production models from your first quarter.
+- Competitive salary, health insurance and flexible hours.

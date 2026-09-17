@@ -1,0 +1,2494 @@
+{
+  "generatedAt": "2026-09-11T07:17:48.941Z",
+  "embeddingModel": "Xenova/bge-small-en-v1.5",
+  "rerankerModel": "Xenova/ms-marco-MiniLM-L-6-v2",
+  "chunking": {
+    "chunkSize": 220,
+    "chunkOverlap": 40,
+    "minChunkSize": 30
+  },
+  "documents": 6,
+  "chunks": 42,
+  "questions": 30,
+  "k": 5,
+  "runs": [
+    {
+      "config": {
+        "id": "keyword",
+        "label": "BM25 only",
+        "options": {
+          "mode": "keyword",
+          "topK": 5,
+          "candidateK": 20,
+          "rerank": false,
+          "minSimilarity": 0,
+          "rrfK": 60,
+          "queryExpansion": true
+        }
+      },
+      "k": 5,
+      "metrics": {
+        "hitRate": 0.9615384615384616,
+        "recall": 0.9038461538461539,
+        "precision": 0.2692307692307694,
+        "mrr": 0.7833333333333333,
+        "ndcg": 0.796527559286011,
+        "count": 26
+      },
+      "abstention": {
+        "answeredRate": 1,
+        "refusalRate": 0,
+        "accuracy": 0.8666666666666667
+      },
+      "latency": {
+        "meanMs": 0.2972633333333306,
+        "p95Ms": 2.0945999999999003
+      },
+      "questions": [
+        {
+          "id": "q01",
+          "question": "What machine learning project did I build during my internship?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 0.3333333333333333,
+            "ndcg": 0.3065735963827292,
+            "firstRelevantRank": 3
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 3.997599999999693
+        },
+        {
+          "id": "q02",
+          "question": "Which algorithm did I use for the churn model?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 0.3333333333333333,
+            "ndcg": 0.5706417189553201,
+            "firstRelevantRank": 3
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 2.0945999999999003
+        },
+        {
+          "id": "q03",
+          "question": "What AUC did the churn model achieve?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.8,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.2252000000003136
+        },
+        {
+          "id": "q04",
+          "question": "How did I handle class imbalance?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.10809999999992215
+        },
+        {
+          "id": "q05",
+          "question": "What data leakage problem did I run into?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6934264036172708,
+            "firstRelevantRank": 2
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.1954000000000633
+        },
+        {
+          "id": "q06",
+          "question": "How was the churn model deployed to production?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.38685280723454163,
+            "firstRelevantRank": 2
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 0.21869999999989886
+        },
+        {
+          "id": "q07",
+          "question": "How did I explain the model's predictions to stakeholders?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.37039999999979045
+        },
+        {
+          "id": "q08",
+          "question": "What exactly was my personal contribution to the churn project?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.17160000000012587
+        },
+        {
+          "id": "q09",
+          "question": "What baseline did the final churn model beat?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.1216999999996915
+        },
+        {
+          "id": "q10",
+          "question": "Which evaluation metric mattered most to the business for churn?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.07520000000022264
+        },
+        {
+          "id": "q11",
+          "question": "How much did I reduce latency at CartWave and how?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.03600000000005821
+        },
+        {
+          "id": "q12",
+          "question": "What testing experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.0741000000002714
+        },
+        {
+          "id": "q13",
+          "question": "Which embedding model does LexiSearch use?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.2,
+            "ndcg": 0.38685280723454163,
+            "firstRelevantRank": 5
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 0.0785000000000764
+        },
+        {
+          "id": "q14",
+          "question": "How did LexiSearch compare against a BM25 baseline?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.9197207891481876,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.044800000000122964
+        },
+        {
+          "id": "q15",
+          "question": "Why did I add keyword search to LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 0,
+            "recall": 0,
+            "precision": 0,
+            "reciprocalRank": 0,
+            "ndcg": 0,
+            "firstRelevantRank": null
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 0.04530000000022483
+        },
+        {
+          "id": "q16",
+          "question": "What kind of FAISS index did LexiSearch use and why?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6309297535714575,
+            "firstRelevantRank": 2
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 0.04229999999961365
+        },
+        {
+          "id": "q17",
+          "question": "What would I do differently in LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6309297535714575,
+            "firstRelevantRank": 2
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 0.03530000000000655
+        },
+        {
+          "id": "q18",
+          "question": "Describe the PulseCheck project.",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.044800000000122964
+        },
+        {
+          "id": "q19",
+          "question": "What leadership experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6509209298071326,
+            "firstRelevantRank": 2
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.0806999999999789
+        },
+        {
+          "id": "q20",
+          "question": "Which hackathon did I win?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 0.6131471927654584,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 0.0363999999999578
+        },
+        {
+          "id": "q21",
+          "question": "What is my CGPA?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.028700000000299042
+        },
+        {
+          "id": "q22",
+          "question": "What cloud platforms have I worked with?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.9197207891481876,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.07969999999977517
+        },
+        {
+          "id": "q23",
+          "question": "Tell me about a time I disagreed with someone at work.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 0.11940000000004147
+        },
+        {
+          "id": "q24",
+          "question": "Tell me about a time I worked under pressure.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 0.13189999999985957
+        },
+        {
+          "id": "q25",
+          "question": "What does the Northwind interview process look like?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "northwind-company-notes.md",
+          "latencyMs": 0.07680000000027576
+        },
+        {
+          "id": "q26",
+          "question": "Which MLOps tools does the Northwind job mention?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 0.06480000000010477
+        },
+        {
+          "id": "q27",
+          "question": "What is my experience with the Rust programming language?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 0.18579999999974461
+        },
+        {
+          "id": "q28",
+          "question": "Have I ever worked at Google?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 0.04820000000017899
+        },
+        {
+          "id": "q29",
+          "question": "Which mobile apps have I published on the App Store?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.04779999999982465
+        },
+        {
+          "id": "q30",
+          "question": "What was my salary at my last job?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "medium",
+          "topScore": 0.5,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 0.03809999999975844
+        }
+      ]
+    },
+    {
+      "config": {
+        "id": "semantic",
+        "label": "Semantic only",
+        "options": {
+          "mode": "semantic",
+          "topK": 5,
+          "candidateK": 20,
+          "rerank": false,
+          "minSimilarity": 0,
+          "rrfK": 60,
+          "queryExpansion": true
+        }
+      },
+      "k": 5,
+      "metrics": {
+        "hitRate": 0.8846153846153846,
+        "recall": 0.7884615384615384,
+        "precision": 0.23846153846153856,
+        "mrr": 0.7096153846153848,
+        "ndcg": 0.7020253319545334,
+        "count": 26
+      },
+      "abstention": {
+        "answeredRate": 0.8846153846153846,
+        "refusalRate": 0.75,
+        "accuracy": 0.8666666666666667
+      },
+      "latency": {
+        "meanMs": 8.948923333333338,
+        "p95Ms": 12.151800000000094
+      },
+      "questions": [
+        {
+          "id": "q01",
+          "question": "What machine learning project did I build during my internship?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 0,
+            "recall": 0,
+            "precision": 0,
+            "reciprocalRank": 0,
+            "ndcg": 0,
+            "firstRelevantRank": null
+          },
+          "confidence": "medium",
+          "topScore": 0.7120563515700018,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 12.601600000000417
+        },
+        {
+          "id": "q02",
+          "question": "Which algorithm did I use for the churn model?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.9197207891481876,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.770029250108941,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.000099999999748
+        },
+        {
+          "id": "q03",
+          "question": "What AUC did the churn model achieve?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.8,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.695332945598961,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.537699999999859
+        },
+        {
+          "id": "q04",
+          "question": "How did I handle class imbalance?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.7329639108666257,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.306100000000242
+        },
+        {
+          "id": "q05",
+          "question": "What data leakage problem did I run into?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.8772153153380493,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.7142359645987317,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 9.134800000000268
+        },
+        {
+          "id": "q06",
+          "question": "How was the churn model deployed to production?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 0.2,
+            "ndcg": 0.23719771276929622,
+            "firstRelevantRank": 5
+          },
+          "confidence": "medium",
+          "topScore": 0.7067353912321154,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.277999999999793
+        },
+        {
+          "id": "q07",
+          "question": "How did I explain the model's predictions to stakeholders?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.4,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6240505200038379,
+            "firstRelevantRank": 2
+          },
+          "confidence": "low",
+          "topScore": 0.6398390968447099,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 9.675900000000183
+        },
+        {
+          "id": "q08",
+          "question": "What exactly was my personal contribution to the churn project?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.6670267639520233,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.06880000000001
+        },
+        {
+          "id": "q09",
+          "question": "What baseline did the final churn model beat?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.709417992235021,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.395399999999881
+        },
+        {
+          "id": "q10",
+          "question": "Which evaluation metric mattered most to the business for churn?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.3333333333333333,
+            "ndcg": 0.5,
+            "firstRelevantRank": 3
+          },
+          "confidence": "medium",
+          "topScore": 0.6892531256263071,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 9.0304000000001
+        },
+        {
+          "id": "q11",
+          "question": "How much did I reduce latency at CartWave and how?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6309297535714575,
+            "firstRelevantRank": 2
+          },
+          "confidence": "medium",
+          "topScore": 0.6657065725626304,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 9.558799999999792
+        },
+        {
+          "id": "q12",
+          "question": "What testing experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 0,
+            "recall": 0,
+            "precision": 0,
+            "reciprocalRank": 0,
+            "ndcg": 0,
+            "firstRelevantRank": null
+          },
+          "confidence": "none",
+          "topScore": 0.5459379728360672,
+          "topDoc": "northwind-company-notes.md",
+          "latencyMs": 7.676100000000133
+        },
+        {
+          "id": "q13",
+          "question": "Which embedding model does LexiSearch use?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.7752574758435551,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.013300000000072
+        },
+        {
+          "id": "q14",
+          "question": "How did LexiSearch compare against a BM25 baseline?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 0.6131471927654584,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.8200544571444183,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.776200000000244
+        },
+        {
+          "id": "q15",
+          "question": "Why did I add keyword search to LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.25,
+            "ndcg": 0.43067655807339306,
+            "firstRelevantRank": 4
+          },
+          "confidence": "high",
+          "topScore": 0.7412314063280432,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.781199999999899
+        },
+        {
+          "id": "q16",
+          "question": "What kind of FAISS index did LexiSearch use and why?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.3333333333333333,
+            "ndcg": 0.5,
+            "firstRelevantRank": 3
+          },
+          "confidence": "high",
+          "topScore": 0.7859134482854335,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 9.529199999999946
+        },
+        {
+          "id": "q17",
+          "question": "What would I do differently in LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.7749811675016838,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.559699999999793
+        },
+        {
+          "id": "q18",
+          "question": "Describe the PulseCheck project.",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.69325935452657,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 8.23849999999993
+        },
+        {
+          "id": "q19",
+          "question": "What leadership experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 0.3333333333333333,
+            "ndcg": 0.3065735963827292,
+            "firstRelevantRank": 3
+          },
+          "confidence": "none",
+          "topScore": 0.5550559494751782,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 6.884399999999914
+        },
+        {
+          "id": "q20",
+          "question": "Which hackathon did I win?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.6873877135080338,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 7.107100000000173
+        },
+        {
+          "id": "q21",
+          "question": "What is my CGPA?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 0,
+            "recall": 0,
+            "precision": 0,
+            "reciprocalRank": 0,
+            "ndcg": 0,
+            "firstRelevantRank": null
+          },
+          "confidence": "none",
+          "topScore": 0.5491495622513217,
+          "topDoc": "northwind-company-notes.md",
+          "latencyMs": 7.54509999999982
+        },
+        {
+          "id": "q22",
+          "question": "What cloud platforms have I worked with?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 0.6131471927654584,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.6904332384938591,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 8.252899999999954
+        },
+        {
+          "id": "q23",
+          "question": "Tell me about a time I disagreed with someone at work.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "low",
+          "topScore": 0.6021233835312806,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 8.695099999999911
+        },
+        {
+          "id": "q24",
+          "question": "Tell me about a time I worked under pressure.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "low",
+          "topScore": 0.5926914715941547,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 10.145600000000286
+        },
+        {
+          "id": "q25",
+          "question": "What does the Northwind interview process look like?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.8063199631305661,
+          "topDoc": "northwind-company-notes.md",
+          "latencyMs": 10.53919999999971
+        },
+        {
+          "id": "q26",
+          "question": "Which MLOps tools does the Northwind job mention?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.775822392354262,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 9.121799999999894
+        },
+        {
+          "id": "q27",
+          "question": "What is my experience with the Rust programming language?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "medium",
+          "topScore": 0.6429967545036386,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 12.151800000000094
+        },
+        {
+          "id": "q28",
+          "question": "Have I ever worked at Google?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.5261984674811382,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 10.895899999999983
+        },
+        {
+          "id": "q29",
+          "question": "Which mobile apps have I published on the App Store?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.5598837054623689,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 7.870300000000043
+        },
+        {
+          "id": "q30",
+          "question": "What was my salary at my last job?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.5513812482267344,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 10.096700000000055
+        }
+      ]
+    },
+    {
+      "config": {
+        "id": "hybrid",
+        "label": "Hybrid (BM25 + semantic, RRF)",
+        "options": {
+          "mode": "hybrid",
+          "topK": 5,
+          "candidateK": 20,
+          "rerank": false,
+          "minSimilarity": 0,
+          "rrfK": 60,
+          "queryExpansion": true
+        }
+      },
+      "k": 5,
+      "metrics": {
+        "hitRate": 0.9230769230769231,
+        "recall": 0.8846153846153846,
+        "precision": 0.2692307692307694,
+        "mrr": 0.8044871794871795,
+        "ndcg": 0.7991639694338184,
+        "count": 26
+      },
+      "abstention": {
+        "answeredRate": 0.8846153846153846,
+        "refusalRate": 0.75,
+        "accuracy": 0.8666666666666667
+      },
+      "latency": {
+        "meanMs": 8.597700000000092,
+        "p95Ms": 11.24330000000009
+      },
+      "questions": [
+        {
+          "id": "q01",
+          "question": "What machine learning project did I build during my internship?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 0,
+            "recall": 0,
+            "precision": 0,
+            "reciprocalRank": 0,
+            "ndcg": 0,
+            "firstRelevantRank": null
+          },
+          "confidence": "medium",
+          "topScore": 0.7120563515700018,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 9.150500000000193
+        },
+        {
+          "id": "q02",
+          "question": "Which algorithm did I use for the churn model?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.9197207891481876,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.770029250108941,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 11.24330000000009
+        },
+        {
+          "id": "q03",
+          "question": "What AUC did the churn model achieve?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.8,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.695332945598961,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.38779999999997
+        },
+        {
+          "id": "q04",
+          "question": "How did I handle class imbalance?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.7329639108666257,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 6.693700000000263
+        },
+        {
+          "id": "q05",
+          "question": "What data leakage problem did I run into?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.7142359645987317,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 10.114700000000084
+        },
+        {
+          "id": "q06",
+          "question": "How was the churn model deployed to production?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 0.6131471927654584,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.7067353912321154,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 8.989999999999782
+        },
+        {
+          "id": "q07",
+          "question": "How did I explain the model's predictions to stakeholders?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.6,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "low",
+          "topScore": 0.6394784970478834,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 12.420599999999922
+        },
+        {
+          "id": "q08",
+          "question": "What exactly was my personal contribution to the churn project?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.6670267639520233,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 9.609300000000076
+        },
+        {
+          "id": "q09",
+          "question": "What baseline did the final churn model beat?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.709417992235021,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 8.511700000000019
+        },
+        {
+          "id": "q10",
+          "question": "Which evaluation metric mattered most to the business for churn?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.6892531256263071,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 9.91000000000031
+        },
+        {
+          "id": "q11",
+          "question": "How much did I reduce latency at CartWave and how?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6309297535714575,
+            "firstRelevantRank": 2
+          },
+          "confidence": "medium",
+          "topScore": 0.6657065725626304,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.620100000000093
+        },
+        {
+          "id": "q12",
+          "question": "What testing experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 0,
+            "recall": 0,
+            "precision": 0,
+            "reciprocalRank": 0,
+            "ndcg": 0,
+            "firstRelevantRank": null
+          },
+          "confidence": "none",
+          "topScore": 0.5451333325293287,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 8.472900000000209
+        },
+        {
+          "id": "q13",
+          "question": "Which embedding model does LexiSearch use?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.3333333333333333,
+            "ndcg": 0.5,
+            "firstRelevantRank": 3
+          },
+          "confidence": "high",
+          "topScore": 0.7752574758435551,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.153800000000047
+        },
+        {
+          "id": "q14",
+          "question": "How did LexiSearch compare against a BM25 baseline?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.9197207891481876,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.8200544571444183,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 9.490899999999783
+        },
+        {
+          "id": "q15",
+          "question": "Why did I add keyword search to LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.25,
+            "ndcg": 0.43067655807339306,
+            "firstRelevantRank": 4
+          },
+          "confidence": "high",
+          "topScore": 0.7412314063280432,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.318900000000212
+        },
+        {
+          "id": "q16",
+          "question": "What kind of FAISS index did LexiSearch use and why?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.3333333333333333,
+            "ndcg": 0.5,
+            "firstRelevantRank": 3
+          },
+          "confidence": "high",
+          "topScore": 0.7859134482854335,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 8.812700000000405
+        },
+        {
+          "id": "q17",
+          "question": "What would I do differently in LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.7749811675016838,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 7.542200000000321
+        },
+        {
+          "id": "q18",
+          "question": "Describe the PulseCheck project.",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.69325935452657,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 7.245400000000245
+        },
+        {
+          "id": "q19",
+          "question": "What leadership experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 0.5,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.38685280723454163,
+            "firstRelevantRank": 2
+          },
+          "confidence": "none",
+          "topScore": 0.5550559494751782,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 7.697099999999864
+        },
+        {
+          "id": "q20",
+          "question": "Which hackathon did I win?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.6873877135080338,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 7.4223000000001775
+        },
+        {
+          "id": "q21",
+          "question": "What is my CGPA?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "none",
+          "topScore": 0.5491495622513217,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 7.020500000000084
+        },
+        {
+          "id": "q22",
+          "question": "What cloud platforms have I worked with?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.8772153153380493,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.6904332384938591,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 7.4177999999997155
+        },
+        {
+          "id": "q23",
+          "question": "Tell me about a time I disagreed with someone at work.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "low",
+          "topScore": 0.6021233835312806,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 9.151600000000144
+        },
+        {
+          "id": "q24",
+          "question": "Tell me about a time I worked under pressure.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "low",
+          "topScore": 0.5926914715941547,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 8.340500000000247
+        },
+        {
+          "id": "q25",
+          "question": "What does the Northwind interview process look like?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.8063199631305661,
+          "topDoc": "northwind-company-notes.md",
+          "latencyMs": 8.204000000000178
+        },
+        {
+          "id": "q26",
+          "question": "Which MLOps tools does the Northwind job mention?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.775822392354262,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 8.841199999999844
+        },
+        {
+          "id": "q27",
+          "question": "What is my experience with the Rust programming language?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "medium",
+          "topScore": 0.6429967545036386,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 8.350800000000163
+        },
+        {
+          "id": "q28",
+          "question": "Have I ever worked at Google?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.5261984674811382,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 7.607899999999972
+        },
+        {
+          "id": "q29",
+          "question": "Which mobile apps have I published on the App Store?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.5598837054623689,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 8.431900000000041
+        },
+        {
+          "id": "q30",
+          "question": "What was my salary at my last job?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.5513812482267344,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 7.756900000000314
+        }
+      ]
+    },
+    {
+      "config": {
+        "id": "hybrid_rerank",
+        "label": "Hybrid + cross-encoder rerank",
+        "options": {
+          "mode": "hybrid",
+          "topK": 5,
+          "candidateK": 20,
+          "rerank": true,
+          "minSimilarity": 0,
+          "rrfK": 60,
+          "queryExpansion": true
+        }
+      },
+      "k": 5,
+      "metrics": {
+        "hitRate": 1,
+        "recall": 1,
+        "precision": 0.32307692307692315,
+        "mrr": 0.8942307692307693,
+        "ndcg": 0.9214078533764961,
+        "count": 26
+      },
+      "abstention": {
+        "answeredRate": 0.9615384615384616,
+        "refusalRate": 1,
+        "accuracy": 0.9666666666666667
+      },
+      "latency": {
+        "meanMs": 373.3406933333333,
+        "p95Ms": 480.8750999999993
+      },
+      "questions": [
+        {
+          "id": "q01",
+          "question": "What machine learning project did I build during my internship?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9518634364436763,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 395.54010000000017
+        },
+        {
+          "id": "q02",
+          "question": "Which algorithm did I use for the churn model?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.6,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.952544950551976,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 323.31119999999964
+        },
+        {
+          "id": "q03",
+          "question": "What AUC did the churn model achieve?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.8,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9972078255724797,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 319.2392999999993
+        },
+        {
+          "id": "q04",
+          "question": "How did I handle class imbalance?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9983148207803129,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 395.32800000000043
+        },
+        {
+          "id": "q05",
+          "question": "What data leakage problem did I run into?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.2816360948767628,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 339.3267000000005
+        },
+        {
+          "id": "q06",
+          "question": "How was the churn model deployed to production?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6934264036172708,
+            "firstRelevantRank": 2
+          },
+          "confidence": "high",
+          "topScore": 0.9668789943209174,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 347.1924999999992
+        },
+        {
+          "id": "q07",
+          "question": "How did I explain the model's predictions to stakeholders?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.6,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.5562054957290932,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 501.5718999999999
+        },
+        {
+          "id": "q08",
+          "question": "What exactly was my personal contribution to the churn project?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9737248940872165,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 357.78889999999956
+        },
+        {
+          "id": "q09",
+          "question": "What baseline did the final churn model beat?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.6,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.965277427117973,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 320.3885
+        },
+        {
+          "id": "q10",
+          "question": "Which evaluation metric mattered most to the business for churn?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9343530141635803,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 312.7595000000001
+        },
+        {
+          "id": "q11",
+          "question": "How much did I reduce latency at CartWave and how?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9672209420632755,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 346.8735999999999
+        },
+        {
+          "id": "q12",
+          "question": "What testing experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9236829377357856,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 420.0541999999996
+        },
+        {
+          "id": "q13",
+          "question": "Which embedding model does LexiSearch use?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6309297535714575,
+            "firstRelevantRank": 2
+          },
+          "confidence": "high",
+          "topScore": 0.9932087270911683,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 402.66099999999915
+        },
+        {
+          "id": "q14",
+          "question": "How did LexiSearch compare against a BM25 baseline?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 0.9197207891481876,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9705772779226897,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 414.4855000000007
+        },
+        {
+          "id": "q15",
+          "question": "Why did I add keyword search to LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6309297535714575,
+            "firstRelevantRank": 2
+          },
+          "confidence": "high",
+          "topScore": 0.78225707746782,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 402.51970000000074
+        },
+        {
+          "id": "q16",
+          "question": "What kind of FAISS index did LexiSearch use and why?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 0.25,
+            "ndcg": 0.43067655807339306,
+            "firstRelevantRank": 4
+          },
+          "confidence": "high",
+          "topScore": 0.9742336182166282,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 430.79509999999937
+        },
+        {
+          "id": "q17",
+          "question": "What would I do differently in LexiSearch?",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9989353056415761,
+          "topDoc": "lexisearch-design-notes.md",
+          "latencyMs": 393.4300000000003
+        },
+        {
+          "id": "q18",
+          "question": "Describe the PulseCheck project.",
+          "category": "project",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9656282009015293,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 392.1980000000003
+        },
+        {
+          "id": "q19",
+          "question": "What leadership experience do I have?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 0.5,
+            "ndcg": 0.6509209298071326,
+            "firstRelevantRank": 2
+          },
+          "confidence": "none",
+          "topScore": 0.000064176482795943,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 324.98779999999897
+        },
+        {
+          "id": "q20",
+          "question": "Which hackathon did I win?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.35378380567110723,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 291.2955000000002
+        },
+        {
+          "id": "q21",
+          "question": "What is my CGPA?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.21419417757070036,
+          "topDoc": "alex-rivera-resume.pdf",
+          "latencyMs": 385.1293999999998
+        },
+        {
+          "id": "q22",
+          "question": "What cloud platforms have I worked with?",
+          "category": "resume",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.4,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "low",
+          "topScore": 0.021600277132717345,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 325.8883999999998
+        },
+        {
+          "id": "q23",
+          "question": "Tell me about a time I disagreed with someone at work.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "medium",
+          "topScore": 0.4524972221193662,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 418.3709999999992
+        },
+        {
+          "id": "q24",
+          "question": "Tell me about a time I worked under pressure.",
+          "category": "behavioural",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9967039908813914,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 473.14770000000135
+        },
+        {
+          "id": "q25",
+          "question": "What does the Northwind interview process look like?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9807372190338652,
+          "topDoc": "northwind-company-notes.md",
+          "latencyMs": 480.8750999999993
+        },
+        {
+          "id": "q26",
+          "question": "Which MLOps tools does the Northwind job mention?",
+          "category": "employer",
+          "answerable": true,
+          "metrics": {
+            "hit": 1,
+            "recall": 1,
+            "precision": 0.2,
+            "reciprocalRank": 1,
+            "ndcg": 1,
+            "firstRelevantRank": 1
+          },
+          "confidence": "high",
+          "topScore": 0.9927160961454491,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 320.03619999999864
+        },
+        {
+          "id": "q27",
+          "question": "What is my experience with the Rust programming language?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.000349246425339668,
+          "topDoc": "northwind-ml-engineer-jd.txt",
+          "latencyMs": 282.72350000000006
+        },
+        {
+          "id": "q28",
+          "question": "Have I ever worked at Google?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.000029846373147465257,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 376.0500000000011
+        },
+        {
+          "id": "q29",
+          "question": "Which mobile apps have I published on the App Store?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.000045037980870216656,
+          "topDoc": "finlytics-churn-project-report.docx",
+          "latencyMs": 365.4272000000001
+        },
+        {
+          "id": "q30",
+          "question": "What was my salary at my last job?",
+          "category": "unanswerable",
+          "answerable": false,
+          "metrics": null,
+          "confidence": "none",
+          "topScore": 0.00002409353264768136,
+          "topDoc": "behavioral-story-notes.md",
+          "latencyMs": 340.8253000000004
+        }
+      ]
+    }
+  ],
+  "grid": [
+    {
+      "chunkSize": 120,
+      "overlap": 22,
+      "runs": [
+        {
+          "config": {
+            "id": "hybrid",
+            "label": "Hybrid (BM25 + semantic, RRF)",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": false,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 0.8846153846153846,
+            "recall": 0.8269230769230769,
+            "precision": 0.26153846153846166,
+            "mrr": 0.7564102564102565,
+            "ndcg": 0.7454719272061774,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.9230769230769231,
+            "refusalRate": 0.25,
+            "accuracy": 0.8333333333333334
+          },
+          "latency": {
+            "meanMs": 9.32571999999988,
+            "p95Ms": 17.062799999999697
+          }
+        },
+        {
+          "config": {
+            "id": "hybrid_rerank",
+            "label": "Hybrid + cross-encoder rerank",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": true,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 1,
+            "recall": 0.9615384615384616,
+            "precision": 0.3153846153846155,
+            "mrr": 0.8557692307692307,
+            "ndcg": 0.8771903497432174,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.9615384615384616,
+            "refusalRate": 1,
+            "accuracy": 0.9666666666666667
+          },
+          "latency": {
+            "meanMs": 273.7256599999999,
+            "p95Ms": 316.1724000000031
+          }
+        }
+      ]
+    },
+    {
+      "chunkSize": 220,
+      "overlap": 40,
+      "runs": [
+        {
+          "config": {
+            "id": "hybrid",
+            "label": "Hybrid (BM25 + semantic, RRF)",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": false,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 0.9230769230769231,
+            "recall": 0.8846153846153846,
+            "precision": 0.2692307692307694,
+            "mrr": 0.8044871794871795,
+            "ndcg": 0.7991639694338184,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.8846153846153846,
+            "refusalRate": 0.75,
+            "accuracy": 0.8666666666666667
+          },
+          "latency": {
+            "meanMs": 8.51736333333356,
+            "p95Ms": 12.857200000002194
+          }
+        },
+        {
+          "config": {
+            "id": "hybrid_rerank",
+            "label": "Hybrid + cross-encoder rerank",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": true,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 1,
+            "recall": 1,
+            "precision": 0.32307692307692315,
+            "mrr": 0.8942307692307693,
+            "ndcg": 0.9214078533764961,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.9615384615384616,
+            "refusalRate": 1,
+            "accuracy": 0.9666666666666667
+          },
+          "latency": {
+            "meanMs": 375.83862666666596,
+            "p95Ms": 436.91739999999845
+          }
+        }
+      ]
+    },
+    {
+      "chunkSize": 350,
+      "overlap": 63,
+      "runs": [
+        {
+          "config": {
+            "id": "hybrid",
+            "label": "Hybrid (BM25 + semantic, RRF)",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": false,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 0.9230769230769231,
+            "recall": 0.8846153846153846,
+            "precision": 0.2692307692307694,
+            "mrr": 0.8141025641025641,
+            "ndcg": 0.8052311894987384,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.8846153846153846,
+            "refusalRate": 0.75,
+            "accuracy": 0.8666666666666667
+          },
+          "latency": {
+            "meanMs": 7.960596666666485,
+            "p95Ms": 9.790399999998044
+          }
+        },
+        {
+          "config": {
+            "id": "hybrid_rerank",
+            "label": "Hybrid + cross-encoder rerank",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": true,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 1,
+            "recall": 1,
+            "precision": 0.32307692307692315,
+            "mrr": 0.8974358974358976,
+            "ndcg": 0.9271618015602814,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.9615384615384616,
+            "refusalRate": 1,
+            "accuracy": 0.9666666666666667
+          },
+          "latency": {
+            "meanMs": 382.3407233333334,
+            "p95Ms": 464.82539999999426
+          }
+        }
+      ]
+    },
+    {
+      "chunkSize": 500,
+      "overlap": 90,
+      "runs": [
+        {
+          "config": {
+            "id": "hybrid",
+            "label": "Hybrid (BM25 + semantic, RRF)",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": false,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 0.9230769230769231,
+            "recall": 0.8846153846153846,
+            "precision": 0.2692307692307694,
+            "mrr": 0.8141025641025641,
+            "ndcg": 0.8052311894987384,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.8846153846153846,
+            "refusalRate": 0.75,
+            "accuracy": 0.8666666666666667
+          },
+          "latency": {
+            "meanMs": 8.092083333332509,
+            "p95Ms": 9.355400000000373
+          }
+        },
+        {
+          "config": {
+            "id": "hybrid_rerank",
+            "label": "Hybrid + cross-encoder rerank",
+            "options": {
+              "mode": "hybrid",
+              "topK": 5,
+              "candidateK": 20,
+              "rerank": true,
+              "minSimilarity": 0,
+              "rrfK": 60,
+              "queryExpansion": true
+            }
+          },
+          "k": 5,
+          "metrics": {
+            "hitRate": 1,
+            "recall": 1,
+            "precision": 0.32307692307692315,
+            "mrr": 0.8974358974358976,
+            "ndcg": 0.9271618015602814,
+            "count": 26
+          },
+          "abstention": {
+            "answeredRate": 0.9615384615384616,
+            "refusalRate": 1,
+            "accuracy": 0.9666666666666667
+          },
+          "latency": {
+            "meanMs": 398.37562000000037,
+            "p95Ms": 470.66969999999856
+          }
+        }
+      ]
+    }
+  ]
+}
