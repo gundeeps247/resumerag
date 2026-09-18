@@ -214,6 +214,8 @@ Measured on a laptop AMD integrated GPU; a discrete GPU or Apple Silicon is seve
 
 **Why:** it was the only candidate that cited every answer, invented no numbers and refused both unanswerable questions — the three properties this product is built on. Qwen2.5 0.5B failed all three; Qwen3 0.6B stayed honest but missed a third of the facts and was the slowest to write; the two 1B+ alternatives did not run at all on mainstream integrated graphics, which rules them out as a default for strangers' laptops.
 
+**Licensing note:** LFM2 weights are open but not under a standard permissive licence — they carry the LFM Open License v1.0, which is free to use commercially below a revenue threshold. The embedding and reranking models are MIT/Apache-2.0. The Settings panel links each model's licence, and switching the default to an Apache-2.0 model (Qwen3 0.6B) is a one-line change in the registry if a stricter licence is required.
+
 **Findings worth keeping:**
 
 - **16-bit activations (`q4f16`) are not safe to ship.** They are ~40% smaller, and on the benchmark GPU they produced repeated tokens and random Chinese — while the same weights in `q4` (32-bit activations) answered correctly and matched the CPU output exactly. The registry therefore only lists `q4` builds.
