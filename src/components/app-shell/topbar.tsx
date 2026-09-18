@@ -68,13 +68,23 @@ function LlmStatusPill() {
               loading && !status ? "bg-muted-foreground/40 animate-pulse" : available ? "bg-success" : "bg-warning",
             )}
           />
-          <span className="truncate">{loading && !status ? "Checking model…" : available ? status?.model : "Evidence-only mode"}</span>
+          <span className="truncate">
+            {loading && !status
+              ? "Checking model…"
+              : available
+                ? `${status?.model}${status?.inBrowser ? " · in browser" : ""}`
+                : "Evidence-only mode"}
+          </span>
         </Link>
       </TooltipTrigger>
       <TooltipContent className="max-w-xs">
-        {available
-          ? `Generating with ${status?.label} · ${status?.model}`
-          : `${status?.error ?? "No language model is reachable."} Retrieval and citations still work; answers show extracted evidence.`}
+        {!available
+          ? `${status?.error ?? "No language model is reachable."} Retrieval and citations still work; answers show extracted evidence.`
+          : status?.inBrowser
+            ? `${status.model} runs in this browser on ${status.inBrowser.webgpu ? "your GPU" : "the CPU"} — free and private. ${
+                status.inBrowser.cached ? "Already downloaded." : `Downloads ${status.inBrowser.downloadMb} MB on first use.`
+              }`
+            : `Generating with ${status?.label} · ${status?.model}`}
       </TooltipContent>
     </Tooltip>
   );

@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>In-browser LLM benchmark</title>
+<script type="module">
+  import { AutoModelForCausalLM, AutoTokenizer, TextStreamer, env } from "/transformers.min.js";
+
+  env.allowLocalModels = false;
+
+  window.bench = async ({ modelId, dtype, device, tasks }) => {
+    const started = performance.now();
+    let lastLog = 0;
+    const progress_callback = (p) => {
+      if (p.status === "progress" && performance.now() - lastLog > 5000) {
+        lastLog = performance.now();
+        console.log(`download ${p.file} ${Math.round(p.progress)}%`);
+      }
+    };
+    const tokenizer = await AutoTokenizer.from_pretrained(modelId, { progress_callback });
+    const model = await AutoModelForCausalLM.from_pretrained(modelId, { dtype, device, progress_callback });
+    const loadMs = performance.now() - started;
+    console.log(`loaded ${modelId} in ${Math.round(loadMs / 1000)} s`);
+
+    const results = [];
+    for (const task of tasks) {
+      const inputs = tokenizer.apply_chat_template(task.messages, {
+        add_generation_prompt: true,
+        return_dict: true,
+        enable_thinking: false,
+      });
+      const promptTokens = inputs.input_ids.dims[1];
+      let firstTokenMs;
+      const t0 = performance.now();
+      const streamer = new TextStreamer(tokenizer, {
+        skip_prompt: true,
+        skip_special_tokens: true,
+        callback_function: () => {},
+        token_callback_function: () => {
+          firstTokenMs ??= performance.now() - t0;
+        },
+      });
+      try {
+        const output = await model.generate({
+          ...inputs,
+          max_new_tokens: task.maxNewTokens,
+          do_sample: false,
+          repetition_penalty: 1.05,
+          streamer,
+        });
+        const totalMs = performance.now() - t0;
+        const newTokens = output.dims[1] - promptTokens;
+        const text = tokenizer.batch_decode(output.slice(null, [promptTokens, null]), { skip_special_tokens: true })[0];
+        const decodeTokPerS = newTokens > 1 && firstTokenMs !== undefined ? (newTokens - 1) / ((totalMs - firstTokenMs) / 1000) : null;
+        results.push({ id: task.id, text, promptTokens, newTokens, firstTokenMs, totalMs, decodeTokPerS });
+        console.log(`${task.id}: ${newTokens} tokens, first ${Math.round(firstTokenMs ?? 0)} ms, ${decodeTokPerS?.toFixed(1)} tok/s`);
+      } catch (error) {
+        results.push({ id: task.id, error: String(error?.message ?? error) });
+        console.log(`${task.id}: ERROR ${error?.message ?? error}`);
+      }
+    }
+    await model.dispose?.();
+    return { modelId, dtype, device, loadMs, results };
+  };
+
+  window.benchReady = true;
+</script>

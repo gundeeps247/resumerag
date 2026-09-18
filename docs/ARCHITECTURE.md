@@ -18,6 +18,9 @@ flowchart TB
       models["Transformers.js models<br/>bge-small-en-v1.5 · ms-marco-MiniLM-L-6-v2"]
       evalw["Evaluation & playground"]
     end
+    subgraph llmw["LLM Web Worker (src/workers/llm.worker.ts)"]
+      gen["In-browser generation<br/>LFM2 1.2B (q4) · WebGPU or WASM"]
+    end
     idb[("IndexedDB (Dexie)<br/>documents · contents · chunks+vectors<br/>conversations · messages · mockSessions<br/>questions · analyses · meta")]
     settings[("localStorage<br/>settings")]
   end
@@ -167,7 +170,7 @@ sequenceDiagram
   end
 ```
 
-If the LLM call fails (Ollama not running, no provider configured), `askQuestion` returns an **evidence-only** answer: the most relevant sentences from the top passages, each with its citation, clearly labelled as quotes.
+**Which model answers.** `streamChat` resolves the connection first (`src/lib/llm/client.ts`): the default "automatic" mode uses the server's provider when `/api/llm/status` reports a reachable one, and otherwise the in-browser model in the LLM worker — so a deployment with no model still generates. If nothing can run, `askQuestion` returns an **evidence-only** answer: the most relevant sentences from the top passages, each with its citation, clearly labelled as quotes.
 
 ## 6. Interview workflows
 
@@ -203,6 +206,10 @@ flowchart LR
 
 ```mermaid
 flowchart TB
+  subgraph m0["Vercel, nothing configured (the live demo)"]
+    b0[Browser] --> v0["Vercel: static app + /api/llm/status"]
+    b0 --> l0["LLM worker in the same tab<br/>LFM2 1.2B from the HF CDN, then cached"]
+  end
   subgraph m1["Local development"]
     b1[Browser] --> n1["next dev"] --> o1["Ollama localhost:11434"]
   end
@@ -213,9 +220,8 @@ flowchart TB
   subgraph m3["Vercel + hosted open-weight model"]
     b3[Browser] --> v3["Vercel /api/llm/chat<br/>(access code, rate limit)"] --> h3["OpenAI-compatible provider"]
   end
-  subgraph m4["Vercel, no model"]
-    b4[Browser] --> v4[Vercel]
-    b4 --> e4["Evidence-only answers<br/>retrieval · citations · evaluation still work"]
+  subgraph m4["Nothing can generate at all"]
+    b4[Browser] --> e4["Evidence-only answers<br/>retrieval · citations · evaluation still work"]
   end
 ```
 

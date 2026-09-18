@@ -38,7 +38,8 @@ export type StreamEvent =
     }
   | { type: "error"; message: string };
 
-export type ProviderId = "ollama" | "openai-compatible" | "huggingface" | "none";
+/** "in-browser" is the model running in the visitor's tab (in-browser.ts), not a server provider. */
+export type ProviderId = "ollama" | "openai-compatible" | "huggingface" | "in-browser" | "none";
 
 export interface ProviderStatus {
   provider: ProviderId;

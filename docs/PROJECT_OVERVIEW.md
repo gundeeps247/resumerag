@@ -28,12 +28,12 @@ that was built, and a per-sentence verification of the answer against the cited 
 
 **Constraints it was built under (all deliberate):**
 
-| Constraint                        | Consequence                                                                                                                                            |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| No paid APIs anywhere in the core | Embeddings, reranking, search and evaluation all run locally; generation uses Ollama or any OpenAI-compatible server you point it at                   |
-| Deployable on Vercel              | The app is static + two small route handlers; the heavy compute is in the browser, and the deployment modes are documented honestly rather than hidden |
-| Privacy claims must be true       | Documents and vectors never leave the device; only the question plus the selected passages go to the language model — and the UI says exactly that     |
-| An understandable core            | The whole RAG pipeline is plain TypeScript in `src/lib/rag`, with no framework abstraction between you and the algorithm                               |
+| Constraint                        | Consequence                                                                                                                                                                     |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No paid APIs anywhere in the core | Embeddings, reranking, search, evaluation **and generation** all run on the user device by default; Ollama or any OpenAI-compatible server can be plugged in for better answers |
+| Deployable on Vercel              | The app is static + two small route handlers; the heavy compute is in the browser, and the deployment modes are documented honestly rather than hidden                          |
+| Privacy claims must be true       | Documents and vectors never leave the device; only the question plus the selected passages go to the language model — and the UI says exactly that                              |
+| An understandable core            | The whole RAG pipeline is plain TypeScript in `src/lib/rag`, with no framework abstraction between you and the algorithm                                                        |
 
 ---
 
@@ -149,11 +149,15 @@ flowchart TB
 
 **Deployment modes (documented, not hidden):**
 
-1. **Local** — `next dev` plus Ollama on your machine: the full experience.
-2. **Vercel + private mode** — the deployed app talks to the _visitor's own_ Ollama; nothing but the page comes from the server.
-3. **Vercel + hosted open-weight model** — the proxy points at any OpenAI-compatible endpoint, protected by an access code and a rate limit.
-4. **Vercel with no model at all** — the app still ingests, retrieves, cites and evaluates, and answers in
-   **evidence-only mode** by quoting the most relevant sentences. RAG minus the "G" still works.
+1. **Vercel with nothing configured (what the live demo runs)** — the whole app, generation included, runs in the
+   visitor's tab: a small open-weight model (LFM2 1.2B, ~850 MB downloaded once and cached, WebGPU or CPU) writes the
+   cited answers. No key, no account, nothing sent anywhere.
+2. **Local** — `next dev` plus Ollama on your machine: the best quality, and what development uses.
+3. **Vercel + private mode** — the deployed app talks to the _visitor's own_ Ollama; nothing but the page comes from the server.
+4. **Vercel + hosted open-weight model** — the proxy points at any OpenAI-compatible endpoint, protected by an access code, a model allowlist and a rate limit.
+
+If no model can run at all, the app answers in **evidence-only mode** by quoting the most relevant sentences: RAG minus
+the "G" still works.
 
 **Ingestion pipeline:** validate (extension, size, magic bytes) → SHA-256 duplicate check → parse (unpdf with layout
 reconstruction for PDFs, mammoth for DOCX, custom parsers for MD/TXT) → classify document type → structure-aware
@@ -166,20 +170,20 @@ transaction. Failures are per-document and retryable; re-indexing reuses the sto
 
 The full list is in [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md); these are the ones worth defending out loud.
 
-| #   | Decision                                                  | Alternative rejected                                    | Why, and the evidence                                                                                                                                                                                                                                                     |
-| --- | --------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Run the whole RAG pipeline in the browser**             | A server-side Python/LangChain service                  | The privacy claim becomes structural, not a promise; hosting is free; it forces an honest architecture. Cost: a first-run model download and CPU-bound ingestion                                                                                                          |
-| 2   | **bge-small-en-v1.5 (384-d, q8, ~34 MB)**                 | MiniLM-L6 (weaker), bge-base (4× bigger), OpenAI (paid) | Best retrieval quality per megabyte for a first-visit download; 384 dimensions keep IndexedDB small. Swappable in Settings, with per-model confidence calibration                                                                                                         |
-| 3   | **Structure-aware chunking, 220 tokens, 40 overlap**      | Fixed-size character windows                            | Chunks never cross a heading, so a citation is always "one section of one document". Measured sweep: 120 tokens lost context (96.2% recall, 0.856 MRR), 220 reached 100% / 0.894, and 350–500 gained nothing while making citations vaguer                                |
-| 4   | **Hybrid retrieval with Reciprocal Rank Fusion (k=60)**   | Pure vector search                                      | Vector search alone misses exact tokens (`XGBoost`, `FAISS`, `p95`); BM25 alone misses paraphrase. RRF needs no score normalisation. Recall@5 78.8% → 88.5%, MRR 0.710 → 0.804                                                                                            |
-| 5   | **Cross-encoder reranking (ms-marco-MiniLM-L-6-v2)**      | Trusting the fused ranks; an LLM reranker               | +11.5 points Recall@5 (→ 100%) and +0.09 MRR for ~370 ms per query in Node (1.1–1.5 s in the browser, after COOP/COEP unlocked multi-threaded WebAssembly). Also the single best answerability signal: unanswerable questions score ≈ 0.000                               |
-| 6   | **Refuse instead of guessing**                            | Always answer with the best available context           | The product is only useful if you can trust it the day before an interview. 100% of the deliberately unanswerable questions are refused, versus 75% when gating on cosine similarity                                                                                      |
-| 7   | **Interview-aware query expansion**                       | Nothing; or an LLM rewrite on every query               | Added _because the evaluation exposed failures_ on behavioural questions. Deterministic, instant, inspectable. Expanding for BM25 alone did not help — the reranker undid the gain — so the reranker sees it too: recall 94.2% → 100%, answer/refuse accuracy 90% → 96.7% |
-| 8   | **Deterministic first, LLM second**                       | Let the model do everything                             | Every workflow produces a useful result with no model running: claim extraction, conflict detection, JD scoring, project detection and evidence retrieval are rules plus retrieval. The LLM only phrases and judges — so the app degrades instead of breaking             |
-| 9   | **Exact brute-force vector search**                       | HNSW / a vector database                                | At personal scale (hundreds to thousands of chunks) exact search takes ~9 ms, gives perfect recall and needs no index maintenance. The `SearchIndex` interface is written so a pgvector implementation could drop in                                                      |
-| 10  | **Constrained JSON decoding + zod + one repair retry**    | Asking politely for JSON and hoping                     | Small local models produce broken JSON often enough to matter. Ollama's JSON-schema `format` mode plus schema validation makes the structured workflows reliable                                                                                                          |
-| 11  | **Citation verification as an explicit, imperfect proxy** | Claiming "verified" from similarity alone               | Similarity is not entailment, so verification also requires matching numbers and enough word overlap, and the UI says _why_ a sentence is unverified. Calibrated against 15 hand-labelled pairs (14 correct)                                                              |
-| 12  | **Evaluate everything and publish the failures**          | A polished demo video                                   | A retrieval benchmark, a chunk-size sweep, per-question results and a generation check ship _inside the app_ — including the question it still gets wrong                                                                                                                 |
+| #   | Decision                                                               | Alternative rejected                                    | Why, and the evidence                                                                                                                                                                                                                                                     |
+| --- | ---------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Run the whole pipeline — retrieval and generation — in the browser** | A server-side Python/LangChain service                  | The privacy claim becomes structural, not a promise; hosting is free; it forces an honest architecture. Cost: a first-run model download and CPU-bound ingestion                                                                                                          |
+| 2   | **bge-small-en-v1.5 (384-d, q8, ~34 MB)**                              | MiniLM-L6 (weaker), bge-base (4× bigger), OpenAI (paid) | Best retrieval quality per megabyte for a first-visit download; 384 dimensions keep IndexedDB small. Swappable in Settings, with per-model confidence calibration                                                                                                         |
+| 3   | **Structure-aware chunking, 220 tokens, 40 overlap**                   | Fixed-size character windows                            | Chunks never cross a heading, so a citation is always "one section of one document". Measured sweep: 120 tokens lost context (96.2% recall, 0.856 MRR), 220 reached 100% / 0.894, and 350–500 gained nothing while making citations vaguer                                |
+| 4   | **Hybrid retrieval with Reciprocal Rank Fusion (k=60)**                | Pure vector search                                      | Vector search alone misses exact tokens (`XGBoost`, `FAISS`, `p95`); BM25 alone misses paraphrase. RRF needs no score normalisation. Recall@5 78.8% → 88.5%, MRR 0.710 → 0.804                                                                                            |
+| 5   | **Cross-encoder reranking (ms-marco-MiniLM-L-6-v2)**                   | Trusting the fused ranks; an LLM reranker               | +11.5 points Recall@5 (→ 100%) and +0.09 MRR for ~370 ms per query in Node (1.1–1.5 s in the browser, after COOP/COEP unlocked multi-threaded WebAssembly). Also the single best answerability signal: unanswerable questions score ≈ 0.000                               |
+| 6   | **Refuse instead of guessing**                                         | Always answer with the best available context           | The product is only useful if you can trust it the day before an interview. 100% of the deliberately unanswerable questions are refused, versus 75% when gating on cosine similarity                                                                                      |
+| 7   | **Interview-aware query expansion**                                    | Nothing; or an LLM rewrite on every query               | Added _because the evaluation exposed failures_ on behavioural questions. Deterministic, instant, inspectable. Expanding for BM25 alone did not help — the reranker undid the gain — so the reranker sees it too: recall 94.2% → 100%, answer/refuse accuracy 90% → 96.7% |
+| 8   | **Deterministic first, LLM second**                                    | Let the model do everything                             | Every workflow produces a useful result with no model running: claim extraction, conflict detection, JD scoring, project detection and evidence retrieval are rules plus retrieval. The LLM only phrases and judges — so the app degrades instead of breaking             |
+| 9   | **Exact brute-force vector search**                                    | HNSW / a vector database                                | At personal scale (hundreds to thousands of chunks) exact search takes ~9 ms, gives perfect recall and needs no index maintenance. The `SearchIndex` interface is written so a pgvector implementation could drop in                                                      |
+| 10  | **Constrained JSON decoding + zod + one repair retry**                 | Asking politely for JSON and hoping                     | Small local models produce broken JSON often enough to matter. Ollama's JSON-schema `format` mode plus schema validation makes the structured workflows reliable                                                                                                          |
+| 11  | **Citation verification as an explicit, imperfect proxy**              | Claiming "verified" from similarity alone               | Similarity is not entailment, so verification also requires matching numbers and enough word overlap, and the UI says _why_ a sentence is unverified. Calibrated against 15 hand-labelled pairs (14 correct)                                                              |
+| 12  | **Evaluate everything and publish the failures**                       | A polished demo video                                   | A retrieval benchmark, a chunk-size sweep, per-question results and a generation check ship _inside the app_ — including the question it still gets wrong                                                                                                                 |
 
 ---
 
@@ -219,10 +223,10 @@ most RAG demos never show: BM25 alone happily answers questions about jobs you n
 
 ## 7. Safety, privacy and honesty
 
-- **Privacy:** documents, parsed text, chunks and vectors are stored only in the browser's IndexedDB. The only thing
-  that ever leaves the device is the question plus the passages selected for it, and only when a language model is
-  configured — the UI states this on the pages where it matters. In private mode even that goes to the visitor's own
-  Ollama instead of the server.
+- **Privacy:** documents, parsed text, chunks and vectors are stored only in the browser's IndexedDB, and with the
+  default in-browser model **nothing leaves the device at all** — the prompt is built and answered in the same tab.
+  Only when a server or hosted provider is configured does the question plus its selected passages go anywhere, and the
+  UI states which model is answering. In private mode it goes to the visitor's own Ollama instead of the server.
 - **File safety:** extension, size and magic-byte validation before parsing; SHA-256 hashing for duplicate detection;
   parsing runs in the worker, so a malformed file fails one document rather than the app.
 - **Prompt injection:** retrieved content is wrapped in tags, attribute-escaped and declared untrusted in the system
@@ -239,15 +243,15 @@ most RAG demos never show: BM25 alone happily answers questions about jobs you n
 
 ## 8. Engineering
 
-| Area            | Detail                                                                                                                                                                                                                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Stack           | Next.js 16 (App Router, React 19, Turbopack), TypeScript strict, Tailwind 4 + shadcn/ui, Dexie, Comlink, Transformers.js, zod 4                                                                                                                                                             |
-| Size            | ~18.6k lines of TypeScript/TSX; the framework-independent RAG core is ~7.4k of that                                                                                                                                                                                                         |
-| Structure       | `src/lib/rag` (pure pipeline: parsing, chunking, embeddings, retrieval, reranking, generation, analysis, evaluation) · `src/lib/workflows` (feature logic) · `src/lib/llm` (providers) · `src/workers` · `src/app` (19 routes) · `src/components`                                           |
-| Portability     | The RAG core depends on neither React, Next.js nor IndexedDB, so the identical code runs in the browser worker, in Node (`npm run eval`) and in unit tests                                                                                                                                  |
-| Tests           | 108 unit tests (chunking, parsing, BM25, fusion, expansion, retrieval, confidence, citation verification, analysis rules, JD scoring, LLM providers, API validation) plus a Playwright end-to-end test that ingests the demo set, asks a question and asserts both a citation and a refusal |
-| Quality gates   | `npm run check` = typecheck + lint + tests + build; Prettier; GitHub Actions CI runs all four                                                                                                                                                                                               |
-| Reproducibility | `npm run demo:generate` builds the sample PDFs/DOCX; `npm run eval` regenerates the benchmark the app displays                                                                                                                                                                              |
+| Area            | Detail                                                                                                                                                                                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stack           | Next.js 16 (App Router, React 19, Turbopack), TypeScript strict, Tailwind 4 + shadcn/ui, Dexie, Comlink, Transformers.js, zod 4                                                                                                                                                                   |
+| Size            | ~18.6k lines of TypeScript/TSX; the framework-independent RAG core is ~7.4k of that                                                                                                                                                                                                               |
+| Structure       | `src/lib/rag` (pure pipeline: parsing, chunking, embeddings, retrieval, reranking, generation, analysis, evaluation) · `src/lib/workflows` (feature logic) · `src/lib/llm` (providers plus the in-browser model) · `src/workers` (RAG and LLM workers) · `src/app` (19 routes) · `src/components` |
+| Portability     | The RAG core depends on neither React, Next.js nor IndexedDB, so the identical code runs in the browser worker, in Node (`npm run eval`) and in unit tests                                                                                                                                        |
+| Tests           | 117 unit tests (chunking, parsing, BM25, fusion, expansion, retrieval, confidence, citation verification, analysis rules, JD scoring, LLM providers, API validation) plus a Playwright end-to-end test that ingests the demo set, asks a question and asserts both a citation and a refusal       |
+| Quality gates   | `npm run check` = typecheck + lint + tests + build; Prettier; GitHub Actions CI runs all four                                                                                                                                                                                                     |
+| Reproducibility | `npm run demo:generate` builds the sample PDFs/DOCX; `npm run eval` regenerates the benchmark the app displays                                                                                                                                                                                    |
 
 ---
 
@@ -277,12 +281,13 @@ npm run dev                       # http://localhost:3000
 Click **Load demo knowledge base** on the dashboard to ingest the six fictional documents, then ask
 _"What machine learning project did I build during my internship?"_ and open **How this answer was generated**.
 
-For generated answers, install [Ollama](https://ollama.com) and run `ollama pull llama3.2` (fast) or
-`ollama pull qwen2.5:7b-instruct` (better). Without any model the app still ingests, retrieves, cites, evaluates and
-answers in evidence-only mode.
+Answers are generated out of the box: with no provider configured the app runs LFM2 1.2B in the browser (a one-time
+~850 MB download, cached afterwards). For better and faster answers install [Ollama](https://ollama.com) and run
+`ollama pull qwen2.5:7b-instruct`; the default "automatic" connection prefers it whenever it is reachable.
 
 Useful scripts: `npm run check` (typecheck + lint + test + build) · `npm run eval` (retrieval benchmark; `--grid` for
-the chunk-size sweep) · `npm run demo:generate` (rebuild the demo documents) · `npm run test:e2e` (Playwright).
+the chunk-size sweep) · `npm run demo:generate` (rebuild the demo documents) · `npm run test:e2e` (Playwright) ·
+`node scripts/llm-bench/run-bench.cjs` (re-run the in-browser model comparison).
 
 ---
 

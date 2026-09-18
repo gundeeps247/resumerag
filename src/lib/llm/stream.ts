@@ -97,3 +97,46 @@ export async function* readSse<T>(body: ReadableStream<Uint8Array>): AsyncGenera
     }
   }
 }
+
+/**
+ * Turns push-style callbacks (for example tokens arriving from a Web Worker) into an async
+ * iterable. `push` queues an item, `close` ends iteration once the queue drains, and `fail`
+ * makes the iterator throw.
+ */
+export function createAsyncQueue<T>() {
+  const items: T[] = [];
+  let closed = false;
+  let failure: { error: unknown } | undefined;
+  let wake: (() => void) | undefined;
+  const notify = () => {
+    wake?.();
+    wake = undefined;
+  };
+  return {
+    push(item: T) {
+      if (closed) return;
+      items.push(item);
+      notify();
+    },
+    close() {
+      closed = true;
+      notify();
+    },
+    fail(error: unknown) {
+      failure ??= { error };
+      closed = true;
+      notify();
+    },
+    async *[Symbol.asyncIterator](): AsyncGenerator<T> {
+      while (true) {
+        if (items.length) {
+          yield items.shift() as T;
+          continue;
+        }
+        if (failure) throw failure.error;
+        if (closed) return;
+        await new Promise<void>((resolve) => (wake = resolve));
+      }
+    },
+  };
+}

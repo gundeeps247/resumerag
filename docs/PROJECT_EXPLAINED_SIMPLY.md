@@ -361,9 +361,17 @@ When a model states something that sounds right but is not supported by any sour
 - **Analogy:** a teacher checking that each quote in an essay really appears on the page the student cited.
 - **Honest limit:** similarity is not proof. _"You built the Airflow infrastructure yourself"_ looks similar to a passage that says _the data engineering team built it_. A stronger "entailment" model is on the roadmap.
 
+### Where the answer is written
+
+- **Technical:** the connection mode decides which language model generates: a server provider, the model in the browser tab, the visitor's own Ollama, or none.
+- **Simple:** the app writes the answer using whichever "brain" is available, preferring the strongest one it can reach.
+- **Why it matters:** the deployed site has no model of its own, so by default a small open-weight model (LFM2 1.2B, about 850 MB) is downloaded into the browser once and used from then on. That means the public demo can still write real answers, for free, without an account — and without your documents ever leaving your computer.
+- **Analogy:** rather than phoning an expert (an API), the app keeps a pocket reference book on your desk. It is not as clever as the expert, but it is always there, free, and never tells anyone what you asked.
+- **Example:** on the live demo your first question waits for the download and then answers in ~15 seconds; later questions reuse the cached model.
+
 ### Evidence-only mode
 
-If no language model is reachable (for example on the deployed site without Ollama), the app still retrieves and shows the most relevant sentences with citations, clearly labelled as quotes. Nothing is generated, so nothing can be hallucinated. See `extractiveAnswer()` in `src/lib/rag/generation/extractive.ts`.
+If no language model can run at all (an old browser, a device without enough memory), the app still retrieves and shows the most relevant sentences with citations, clearly labelled as quotes. Nothing is generated, so nothing can be hallucinated. See `extractiveAnswer()` in `src/lib/rag/generation/extractive.ts`.
 
 ---
 
@@ -580,7 +588,7 @@ Documents, chunks, vectors, chats and interview sessions are stored in **your br
 
 **"Why is it slow sometimes?"** Retrieval takes about a second in the browser (mostly the reranker). The language model on a laptop CPU writes ~6–10 tokens per second. A GPU or a smaller model makes it much faster.
 
-**"What happens on the deployed website?"** The heavy retrieval work runs in the visitor's browser. For answers, the site either has no model (evidence-only mode), connects to the visitor's own Ollama ("private mode"), or uses a hosted open-weight model configured by the owner.
+**"What happens on the deployed website?"** Everything runs in the visitor's browser: retrieval always, and generation too — a small open-weight model is downloaded once and writes the answers. Visitors who run Ollama can point the app at it instead ("private mode"), and the owner can configure a hosted open-weight model for everyone.
 
 ---
 

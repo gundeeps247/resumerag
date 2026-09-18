@@ -86,9 +86,9 @@ export async function matchJobDescription(
 
 const summarySchema = z.object({
   summary: z.string(),
-  strengths: z.array(z.string()).max(5),
-  gaps: z.array(z.string()).max(5),
-  interviewFocus: z.array(z.string()).max(5),
+  strengths: z.array(z.string()).max(5).default([]),
+  gaps: z.array(z.string()).max(5).default([]),
+  interviewFocus: z.array(z.string()).max(5).default([]),
   prepPlan: z.array(z.object({ topic: z.string(), action: z.string() })).max(6),
   likelyQuestions: z.array(z.object({ question: z.string(), why: z.string() })).max(6),
 });

@@ -1,0 +1,6 @@
+{
+  "modelId": "onnx-community/Qwen2.5-1.5B-Instruct",
+  "dtype": "q4",
+  "device": "webgpu",
+  "error": "page.evaluate: Error: Can't create a session. ERROR_CODE: 6, ERROR_MESSAGE: std::bad_alloc\n    at Le (http://localhost:3210/transformers.min.js:12:31247)\n    at Id (http://localhost:3210/transformers.min.js:13:22953)\n    at async $2.loadModel (http://localhost:3210/transformers.min.js:13:35835)\n    at async gd.createInferenceSessionHandler (http://localhost:3210/transformers.min.js:13:37556)\n    at async u2.create (http://localhost:3210/transformers.min.js:10:47888)\n    at async Pc (http://localhost:3210/transformers.min.js:13:54332)\n    at async http://localhost:3210/transformers.min.js:37:16886\n    at async Promise.all (index 0)\n    at async RT (http://localhost:3210/transformers.min.js:37:16743)\n    at async Promise.all (index 0)"
+}

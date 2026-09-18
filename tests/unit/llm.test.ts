@@ -1,8 +1,19 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { extractJson, parseWithSchema } from "@/lib/llm/json";
 import { OllamaProvider } from "@/lib/llm/providers/ollama";
 import { OpenAICompatibleProvider } from "@/lib/llm/providers/openai-compatible";
-import { fetchLlmStatus, NO_SERVER_PROVIDER_MESSAGE, streamChat } from "@/lib/llm/client";
+import { BROWSER_MODELS, browserModelWeightsUrl, DEFAULT_BROWSER_MODEL_ID, getBrowserModel } from "@/lib/llm/browser-models";
+import {
+  fetchLlmStatus,
+  type LlmStatus,
+  NO_SERVER_PROVIDER_MESSAGE,
+  rememberServerStatus,
+  resolveMode,
+  serverIsUsable,
+  streamChat,
+} from "@/lib/llm/client";
+import { migrateSettings } from "@/lib/client/settings";
+import { createAsyncQueue } from "@/lib/llm/stream";
 import { isModelAllowed, modelAllowlist } from "@/lib/llm/model-policy";
 import { chatRequestSchema } from "@/lib/llm/schema";
 import { readNdjson, readSse, withStallTimeout } from "@/lib/llm/stream";
@@ -175,6 +186,143 @@ describe("LLM client without a server provider", () => {
     await fetchLlmStatus({ mode: "server" });
     await collect(streamChat({ mode: "server" }, [{ role: "user", content: "hi" }])).catch(() => undefined);
     expect(fetchMock.mock.calls.map((c) => c[0])).toContain("/api/llm/chat");
+  });
+});
+
+describe("automatic connection mode", () => {
+  const serverStatus = (patch: Record<string, unknown>) =>
+    Response.json({ provider: "ollama", label: "Ollama", model: "m", available: true, models: ["m"], ...patch });
+
+  /** The client caches the server status for 30 s; drop it so the next case re-checks. */
+  const expireStatusCache = () => rememberServerStatus(null);
+
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    rememberServerStatus(null);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    rememberServerStatus(null);
+  });
+
+  it("uses the server when it has a reachable model, and the in-browser model otherwise", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => serverStatus({})),
+    );
+    await expect(resolveMode({ mode: "auto" })).resolves.toBe("server");
+
+    // No provider configured (the default on Vercel) → generate in the browser instead.
+    expireStatusCache();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => serverStatus({ provider: "none", available: false })),
+    );
+    await expect(resolveMode({ mode: "auto" })).resolves.toBe("in-browser");
+
+    // Provider configured but unreachable (Ollama not running) → also the browser.
+    expireStatusCache();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => serverStatus({ available: false, error: "not reachable" })),
+    );
+    await expect(resolveMode({ mode: "auto" })).resolves.toBe("in-browser");
+
+    // Status endpoint itself failing must not leave the app without a model.
+    expireStatusCache();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("offline");
+      }),
+    );
+    await expect(resolveMode({ mode: "auto" })).resolves.toBe("in-browser");
+  });
+
+  it("reuses a fresh status instead of re-checking the server on every prompt", async () => {
+    const fetchMock = vi.fn(async () => serverStatus({}));
+    vi.stubGlobal("fetch", fetchMock);
+    expireStatusCache();
+    await resolveMode({ mode: "auto" });
+    await resolveMode({ mode: "auto" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expireStatusCache();
+    await resolveMode({ mode: "auto" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not spend a protected deployment's quota without its access code", () => {
+    const protectedServer: LlmStatus = {
+      provider: "openai-compatible",
+      label: "Hosted",
+      model: "m",
+      available: true,
+      models: [],
+      requiresAccessCode: true,
+    };
+    expect(serverIsUsable({ ...protectedServer }, {})).toBe(false);
+    expect(serverIsUsable({ ...protectedServer }, { accessCode: "secret" })).toBe(true);
+    expect(serverIsUsable({ ...protectedServer, requiresAccessCode: false }, {})).toBe(true);
+    expect(serverIsUsable(null, { accessCode: "secret" })).toBe(false);
+  });
+
+  it("explicit modes are never overridden", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => serverStatus({})),
+    );
+    await expect(resolveMode({ mode: "in-browser" })).resolves.toBe("in-browser");
+    await expect(resolveMode({ mode: "browser-ollama" })).resolves.toBe("browser-ollama");
+  });
+});
+
+describe("in-browser model registry", () => {
+  it("falls back to the default model for unknown ids", () => {
+    expect(getBrowserModel(undefined).id).toBe(DEFAULT_BROWSER_MODEL_ID);
+    expect(getBrowserModel("nonexistent/model").id).toBe(DEFAULT_BROWSER_MODEL_ID);
+    expect(getBrowserModel(BROWSER_MODELS[0].id).id).toBe(BROWSER_MODELS[0].id);
+  });
+
+  it("only offers 4-bit builds with 32-bit activations (q4f16 was numerically broken on some GPUs)", () => {
+    for (const model of BROWSER_MODELS) {
+      expect(browserModelWeightsUrl(model.id)).toContain("model_q4.onnx");
+      expect(model.downloadMb).toBeGreaterThan(0);
+      expect(model.license).toBeTruthy();
+    }
+  });
+});
+
+describe("settings migration", () => {
+  it("moves the old server-only default to automatic, keeping explicit choices", () => {
+    expect(migrateSettings({}).llm.mode).toBe("auto");
+    // Saved by version 1, where "server" was merely the default.
+    expect(migrateSettings({ llm: { mode: "server" } }).llm.mode).toBe("auto");
+    // Chosen deliberately after the upgrade.
+    expect(migrateSettings({ version: 2, llm: { mode: "server" } }).llm.mode).toBe("server");
+    expect(migrateSettings({ llm: { mode: "browser-ollama" } }).llm.mode).toBe("browser-ollama");
+    // Unrelated saved settings survive.
+    expect(migrateSettings({ temperature: 0.7 }).temperature).toBe(0.7);
+    expect(migrateSettings({}).version).toBe(2);
+  });
+});
+
+describe("createAsyncQueue", () => {
+  it("delivers pushed items, then ends", async () => {
+    const queue = createAsyncQueue<string>();
+    queue.push("a");
+    queue.push("b");
+    queue.close();
+    expect(await collect(queue[Symbol.asyncIterator]())).toEqual(["a", "b"]);
+  });
+
+  it("waits for items pushed later and surfaces failures after draining", async () => {
+    const queue = createAsyncQueue<number>();
+    const collected = collect(queue[Symbol.asyncIterator]());
+    queue.push(1);
+    await new Promise((r) => setTimeout(r, 0));
+    queue.push(2);
+    queue.fail(new Error("worker crashed"));
+    await expect(collected).rejects.toThrow("worker crashed");
   });
 });
 

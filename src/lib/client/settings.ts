@@ -5,12 +5,15 @@
  * `useSyncExternalStore` (no state-management library needed).
  */
 import { useSyncExternalStore } from "react";
+import { DEFAULT_BROWSER_MODEL_ID } from "@/lib/llm/browser-models";
 import type { LlmConnection } from "@/lib/llm/client";
 import { DEFAULT_CHUNKING, DEFAULT_RETRIEVAL } from "@/lib/rag/config";
 import { DEFAULT_EMBEDDING_MODEL_ID } from "@/lib/rag/embeddings/models";
 import type { ChunkingOptions, RetrievalOptions } from "@/lib/rag/types";
 
 export interface AppSettings {
+  /** Bumped when a default changes in a way saved settings must be migrated to. */
+  version: number;
   retrieval: RetrievalOptions;
   chunking: ChunkingOptions;
   embeddingModelId: string;
@@ -23,12 +26,15 @@ export interface AppSettings {
   developerMode: boolean;
 }
 
+const SETTINGS_VERSION = 2;
+
 export const DEFAULT_SETTINGS: AppSettings = {
+  version: SETTINGS_VERSION,
   retrieval: DEFAULT_RETRIEVAL,
   chunking: DEFAULT_CHUNKING,
   embeddingModelId: DEFAULT_EMBEDDING_MODEL_ID,
   device: "wasm",
-  llm: { mode: "server", ollamaUrl: "http://localhost:11434" },
+  llm: { mode: "auto", ollamaUrl: "http://localhost:11434", browserModel: DEFAULT_BROWSER_MODEL_ID },
   temperature: 0.2,
   strictGrounding: true,
   developerMode: false,
@@ -43,16 +49,26 @@ function load(): AppSettings {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     const saved = JSON.parse(raw) as Partial<AppSettings>;
-    return {
-      ...DEFAULT_SETTINGS,
-      ...saved,
-      retrieval: { ...DEFAULT_SETTINGS.retrieval, ...saved.retrieval },
-      chunking: { ...DEFAULT_SETTINGS.chunking, ...saved.chunking },
-      llm: { ...DEFAULT_SETTINGS.llm, ...saved.llm },
-    };
+    return migrateSettings(saved);
   } catch {
     return DEFAULT_SETTINGS;
   }
+}
+
+/** Merges saved settings over the defaults and upgrades settings saved by older versions. */
+export function migrateSettings(saved: Partial<AppSettings>): AppSettings {
+  const llm = { ...DEFAULT_SETTINGS.llm, ...saved.llm };
+  // Version 1 defaulted to "server", which gives no generation on a deployment without a model.
+  // "auto" behaves identically when the server has one, and uses the in-browser model otherwise.
+  if ((saved.version ?? 1) < 2 && llm.mode === "server") llm.mode = "auto";
+  return {
+    ...DEFAULT_SETTINGS,
+    ...saved,
+    version: SETTINGS_VERSION,
+    retrieval: { ...DEFAULT_SETTINGS.retrieval, ...saved.retrieval },
+    chunking: { ...DEFAULT_SETTINGS.chunking, ...saved.chunking },
+    llm,
+  };
 }
 
 export function getSettings(): AppSettings {

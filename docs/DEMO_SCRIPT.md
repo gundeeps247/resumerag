@@ -14,7 +14,7 @@ A rehearsed walkthrough for interviews. **Bold** lines are what to say; the rest
    - **Mock interview:** answer one question.
 6. Close other heavy apps — local generation is CPU-bound.
 
-**Backup plan:** if Ollama is slow or down, the app automatically answers in _evidence-only mode_ — that's a feature to show, not a failure: "Retrieval and citations don't depend on the LLM."
+**Backup plan:** if Ollama is slow or down, the app falls back to the in-browser model (or, failing that, to _evidence-only mode_) — a feature to show, not a failure: "generation degrades, retrieval and citations do not." On a machine that has never loaded the browser model, expect a one-time ~850 MB download, so pre-warm it in Settings → Language model before demoing offline.
 
 ---
 

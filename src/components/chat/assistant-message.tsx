@@ -3,6 +3,7 @@
 import { CircleCheck, CircleDashed, FileText, Loader2, TriangleAlert, Workflow } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { ConfidenceBadge } from "@/components/common/confidence-badge";
+import { ModelDownloadNote } from "@/components/common/feature-states";
 import { Markdown } from "@/components/common/markdown";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -61,10 +62,13 @@ export function AssistantMessage({ content, trace, stage, active, developerMode,
         ) : null}
 
         {stage && (
-          <p className="text-muted-foreground flex items-center gap-2 text-sm">
-            <Loader2 className="text-brand size-4 animate-spin" />
-            {STAGE_TEXT[stage]}
-          </p>
+          <div className="space-y-1.5">
+            <p className="text-muted-foreground flex items-center gap-2 text-sm">
+              <Loader2 className="text-brand size-4 animate-spin" />
+              {STAGE_TEXT[stage]}
+            </p>
+            <ModelDownloadNote />
+          </div>
         )}
 
         {trace && !stage && (

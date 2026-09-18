@@ -1,5 +1,16 @@
 import { expect, test } from "@playwright/test";
 
+// Pin the connection to the server provider so the test does not depend on whoever happens to be
+// running Ollama, and never downloads the in-browser model. Without a server provider the app
+// answers in evidence-only mode, which still exercises retrieval, citations and refusals.
+test.beforeEach(async ({ context }) => {
+  await context.addInitScript(() => {
+    const raw = window.localStorage.getItem("resumerag.settings.v1");
+    const saved = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+    window.localStorage.setItem("resumerag.settings.v1", JSON.stringify({ ...saved, version: 2, llm: { mode: "server" } }));
+  });
+});
+
 test("landing page explains the product", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /grounded in your own documents/i })).toBeVisible();

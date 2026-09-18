@@ -236,13 +236,13 @@ export default function LandingPage() {
                 },
                 {
                   icon: ShieldCheck,
-                  title: "Open-source models",
-                  text: "Embedding and reranking models run locally with Transformers.js. Generation defaults to Ollama on your own machine.",
+                  title: "Open-weight models, in your browser",
+                  text: "Embeddings, reranking and answer generation all run in this tab with Transformers.js — no API key, no account, no server.",
                 },
                 {
                   icon: Lock,
                   title: "Only what you choose leaves",
-                  text: "If you connect a hosted model, just the question and the top passages are sent to it. With Ollama, nothing leaves your computer.",
+                  text: "Nothing leaves your device with the in-browser model or Ollama. Connect a hosted model and only the question plus the top passages are sent.",
                 },
               ].map((p) => (
                 <div key={p.title} className="bg-card rounded-xl border p-5">

@@ -6,7 +6,7 @@
 
 ## Architecture (say it in one breath)
 
-Next.js app → **Web Worker** runs Transformers.js (bge-small embeddings, MiniLM cross-encoder) → **IndexedDB** stores chunks + vectors → **hybrid search** (cosine + BM25) → **RRF** → **rerank** → **confidence gate** → numbered context → **/api/llm/chat** (validated, rate-limited, streaming) → **Ollama** → citations verified.
+Next.js app → **RAG Web Worker** runs Transformers.js (bge-small embeddings, MiniLM cross-encoder) → **IndexedDB** stores chunks + vectors → **hybrid search** (cosine + BM25) → **RRF** → **rerank** → **confidence gate** → numbered context → generation by the strongest model reachable (**/api/llm/chat** → Ollama or a hosted provider, else **LFM2 1.2B in a second Web Worker**) → citations verified.
 
 ## Core flow
 
@@ -15,16 +15,17 @@ Query: rewrite follow-up → embed → dense top-20 + BM25 top-20 (interview-awa
 
 ## Technology choices (why in 5 words)
 
-| Choice                           | Why                               |
-| -------------------------------- | --------------------------------- |
-| Browser RAG (Transformers.js)    | Vercel limits, privacy, zero cost |
-| bge-small-en-v1.5 (384-d, 34 MB) | Best quality per megabyte         |
-| IndexedDB + exact search         | Personal scale; perfect recall    |
-| BM25 + semantic, RRF             | Exact terms + meaning; rank-based |
-| ms-marco MiniLM cross-encoder    | +0.09 MRR, answerability signal   |
-| Ollama, qwen2.5:7b               | Free, local, JSON-schema output   |
-| zod + JSON Schema                | Model output = untrusted input    |
-| Next.js + TypeScript             | One language, runs in browser     |
+| Choice                           | Why                                                     |
+| -------------------------------- | ------------------------------------------------------- |
+| Browser RAG (Transformers.js)    | Vercel limits, privacy, zero cost                       |
+| bge-small-en-v1.5 (384-d, 34 MB) | Best quality per megabyte                               |
+| IndexedDB + exact search         | Personal scale; perfect recall                          |
+| BM25 + semantic, RRF             | Exact terms + meaning; rank-based                       |
+| ms-marco MiniLM cross-encoder    | +0.09 MRR, answerability signal                         |
+| Ollama, qwen2.5:7b               | Free, local, JSON-schema output                         |
+| LFM2 1.2B in the browser         | Keyless generation on the live site; benchmarked winner |
+| zod + JSON Schema                | Model output = untrusted input                          |
+| Next.js + TypeScript             | One language, runs in browser                           |
 
 ## Numbers to remember
 
@@ -32,7 +33,7 @@ Query: rewrite follow-up → embed → dense top-20 + BM25 top-20 (interview-awa
 - Eval (30 Qs, 4 unanswerable): semantic **78.8%** recall / MRR **0.71** → hybrid **88.5%** / **0.80** → + rerank **100%** / **0.894**, nDCG **0.92**, answer/refuse **96.7%**, all unanswerable refused.
 - Retrieval ~**1.3 s** in the browser (rerank dominates; **0.37 s** in Node). Was ~4.5 s until COOP/COEP headers enabled multi-threaded WASM. Generation ~**6 tok/s** on a CPU (qwen 7B).
 - Citation verification: **14/15** labelled pairs judged correctly.
-- **108** unit tests; Playwright E2E; `npm run eval`.
+- **117** unit tests; Playwright E2E; `npm run eval`.
 
 ## Terminology (one line each)
 

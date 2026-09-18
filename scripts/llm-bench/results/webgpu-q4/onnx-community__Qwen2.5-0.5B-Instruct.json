@@ -1,0 +1,99 @@
+{
+  "modelId": "onnx-community/Qwen2.5-0.5B-Instruct",
+  "dtype": "q4",
+  "device": "webgpu",
+  "loadMs": 9286.135000005364,
+  "results": [
+    {
+      "id": "imbalance",
+      "text": "Handling class imbalance in the churn model was handled by using XGBoost's scale_pos_weight parameter.",
+      "promptTokens": 959,
+      "newTokens": 21,
+      "firstTokenMs": 9882.22499999404,
+      "totalMs": 13097.82500000298,
+      "decodeTokPerS": 6.219679064542976
+    },
+    {
+      "id": "internship-project",
+      "text": "[1] I built a customer churn prediction system using XGBoost that achieved an AUC of 0.91 on the holdout set.",
+      "promptTokens": 999,
+      "newTokens": 32,
+      "firstTokenMs": 3463.140000000596,
+      "totalMs": 6772.305000007153,
+      "decodeTokPerS": 9.367922119307613
+    },
+    {
+      "id": "bm25",
+      "text": "BM25 was added to LexiSearch because it was the best retrieval method among the three options provided. The other methods (BM25 only, Dense only, and Hybrid) were not effective due to the limitations mentioned in the sources.",
+      "promptTokens": 973,
+      "newTokens": 50,
+      "firstTokenMs": 2730.770000010729,
+      "totalMs": 7858.734999999404,
+      "decodeTokPerS": 9.555447433847192
+    },
+    {
+      "id": "leakage",
+      "text": "[1] Data leakage problem was encountered while running a feature audit on the Finlytics dataset. The feature \"account_status_updated_at\" was only populated after a customer had already churned, leading to incorrect labeling of 22% of active, paying customers.",
+      "promptTokens": 1061,
+      "newTokens": 55,
+      "firstTokenMs": 4670.055000007153,
+      "totalMs": 10463.640000000596,
+      "decodeTokPerS": 9.320653792092653
+    },
+    {
+      "id": "disagreement",
+      "text": "[n] I couldn't find enough evidence in your uploaded documents to answer this confidently.",
+      "promptTokens": 1086,
+      "newTokens": 18,
+      "firstTokenMs": 4309.965000003576,
+      "totalMs": 6144.344999998808,
+      "decodeTokPerS": 9.267436409056025
+    },
+    {
+      "id": "final-auc",
+      "text": "0.89",
+      "promptTokens": 1152,
+      "newTokens": 5,
+      "firstTokenMs": 4912.649999991059,
+      "totalMs": 5552.704999998212,
+      "decodeTokPerS": 6.249462936709033
+    },
+    {
+      "id": "salary",
+      "text": "[n]",
+      "promptTokens": 1094,
+      "newTokens": 3,
+      "firstTokenMs": 2738.295000001788,
+      "totalMs": 3101.594999998808,
+      "decodeTokPerS": 5.505092210339682
+    },
+    {
+      "id": "kubernetes",
+      "text": "[1]",
+      "promptTokens": 993,
+      "newTokens": 4,
+      "firstTokenMs": 7601.269999995828,
+      "totalMs": 8084.949999988079,
+      "decodeTokPerS": 6.202447899537009
+    },
+    {
+      "id": "json-questions",
+      "text": "```json\n{\n  \"questions\": [\n    {\n      \"question\": \"Why did I choose to use PyTorch for my ML project?\",\n      \"whyAsked\": \"The choice to use PyTorch was motivated by the need to build a deep learning model that could handle large datasets efficiently.\",\n      \"sources\": [\n        {\n          \"id\": \"1\",\n          \"document\": \"alex-rivera-resume.pdf\",\n          \"type\": \"Resume\",\n          \"location\": \"page 2 · Alex Rivera > SKILLS\"\n        }\n      ]\n    },\n    {\n      \"question\": \"Why did I decide to use FastAPI for my API project?\",\n      \"whyAsked\": \"The decision to use FastAPI was driven by the need to build a robust API that could handle complex interactions between different components.\",\n      \"sources\": [\n        {\n          \"id\": \"2\",\n          \"document\": \"behavioral-story-notes.md\",\n          \"type\": \"Notes\",\n          \"location\": \"Behavioural Interview Notes — Raw Stories > Weaknesses I should be honest about\"\n        }\n      ]\n    },\n    {\n      \"question\": \"Why did I choose to use Hugging Face Transformers for my data preprocessing project?\",\n      \"whyAsked\": \"The choice to use Hugging Face Transformers was made due to the necessity of building a pipeline that could handle large amounts of textual data.\",\n      \"sources\": [\n        {\n          \"id\": \"3\",\n          \"document\": \"finlytics-churn-project-report.docx\",\n          \"type\": \"Project report\",\n          \"location\": \"10. My Contribution\"\n        }\n      ]\n    }\n  ],\n  \"answers\": [\n    {\n      \"answer\": \"I chose to use PyTorch for my ML project because it provided me with the necessary tools and libraries to build a deep learning model that could handle large datasets efficiently.\",\n      \"source\": [\n        {\n          \"id\": \"1\",\n          \"document\": \"alex-rivera-resume.pdf\",\n          \"type\": \"Resume\",\n          \"location\": \"page 2 · Alex Rivera > SKILLS\"\n        }\n      ]\n    },\n    {\n      \"answer\": \"I decided to use FastAPI for my API project because it allowed me to build a robust API that could handle complex interactions between different components.\",\n      \"source\": [\n        {\n          \"id\": \"2\",\n          \"document\": \"behavioral-story-notes.md\",\n          \"type\": \"Notes\",\n          \"location\": \"Behavioural Interview Notes — Raw Stories > Weaknesses I should be honest about\"\n        }\n      ]\n    },\n    {\n      \"answer\": \"I chose to use Hugging Face Transformers for my data preprocessing project because it provided me with the necessary tools and libraries to build a pipeline that could handle large amounts of textual data.\",\n      \"source\": [\n        {\n          \"id\": \"3\",\n          \"document\": \"finlytics-churn-project-report.docx\",\n          \"type\": \"Project report\",\n          \"location\": \"10. My Contribution\"\n        }\n      ]\n    }\n  ]\n}\n```\n\n**Explanation:** The first question directly relates to the candidate's choice of tools and libraries, which is a key factor in evaluating technical skills. The second question builds upon this by asking why the candidate chose to use FastAPI, which is a popular choice among tech professionals. The third question extends this to a broader context",
+      "promptTokens": 1124,
+      "newTokens": 700,
+      "firstTokenMs": 3838.5399999916553,
+      "totalMs": 73345.53499999642,
+      "decodeTokPerS": 10.056541791224785
+    },
+    {
+      "id": "json-evaluation",
+      "text": "```json\n{\n  \"scores\": {\n    \"relevance\": 3,\n    \"correctness\": 3,\n    \"evidence\": 3,\n    \"depth\": 3,\n    \"structure\": 3,\n    \"clarity\": 3\n  },\n  \"strengths\": [\n    \"The answer provides a clear and concise explanation of how the candidate addressed class imbalance in the churn model.\",\n    \"It includes specific examples and real-world scenarios that demonstrate the candidate's understanding of the problem and solution.\",\n    \"The answer uses real data and examples to support the candidate's reasoning, making it more relevant and credible.\"\n  ],\n  \"improvements\": [\n    \"The answer could be slightly more detailed by providing more specific examples and explaining the trade-offs between different approaches.\",\n    \"The answer could also include a comparison to other models that might have been considered, such as logistic regression or random forests, to highlight the candidate's approach.\"\n  ],\n  \"betterAnswerOutline\": \"...\"\n}\n```\n\n**Explanation:** \nThe candidate provided a detailed explanation of how they addressed class imbalance in the churn model. They mentioned that they used SMOTE oversampling to balance the classes and improved the F1 score significantly. They also mentioned tuning the model with Optuna. This information is directly supported by the text in the source document and provides concrete examples of how the candidate implemented their solution. Additionally, the candidate provides a comparison to other models and mentions that they used Optuna, which is a popular optimization library for machine learning. This information is also directly supported by the text in the source document and provides concrete examples of how the candidate implemented their solution.",
+      "promptTokens": 1122,
+      "newTokens": 339,
+      "firstTokenMs": 5709.6500000059605,
+      "totalMs": 40163.94499999285,
+      "decodeTokPerS": 9.810097696096486
+    }
+  ],
+  "params": "0.5B"
+}

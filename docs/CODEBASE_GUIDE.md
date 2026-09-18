@@ -11,8 +11,8 @@ src/app/…            Pages and API routes (Next.js)
 src/components/…     UI components
 src/lib/workflows/…  Feature orchestration (Ask, Resume X-ray, JD match, mock interview…)
 src/lib/client/…     Browser-side helpers: worker client, settings, knowledge-base operations
-src/workers/…        The RAG Web Worker (hosts models, index, ingestion)
-src/lib/llm/…        LLM provider abstraction (Ollama, OpenAI-compatible, Hugging Face)
+src/workers/…        Web Workers: the RAG engine, and the in-browser language model
+src/lib/llm/…        LLM access (Ollama, OpenAI-compatible, Hugging Face, in-browser)
 src/lib/rag/…        ★ The RAG core — pure TypeScript, no React, no browser APIs
 src/lib/db/…         IndexedDB schema
 src/lib/server/…     Server-only config, provider factory, rate limiter
@@ -160,26 +160,40 @@ The `RagEngine` class, exposed with Comlink. It owns the models, the ingestion q
 
 ---
 
+## `src/workers/llm.worker.ts` — the in-browser language model
+
+`BrowserLlmEngine`, also exposed with Comlink, in a second worker so generation never blocks retrieval or citation checks.
+
+| Member              | What it does                                                                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `load(id)`          | Downloads (first time) and loads a model: WebGPU when an adapter exists, otherwise WASM, and falls back to WASM if the GPU session fails. |
+| `generate(...)`     | One request at a time through an internal queue; streams text out through a callback and returns token counts and the backend used.       |
+| `cancel(requestId)` | Interrupts the running generation, or drops a request that is still queued.                                                               |
+| `loadedModel()`     | Which model is in memory, so the UI can say "already downloaded".                                                                         |
+
 ## `src/lib/llm/` — language-model access
 
-| File                             | What it does                                                                                                                                                                                                                                                                         |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `types.ts`                       | `LLMProvider` interface (`streamChat`, `status`), `ChatMessage`, `GenerateOptions`, `StreamEvent`, `ProviderError`.                                                                                                                                                                  |
-| `providers/ollama.ts`            | `OllamaProvider` — `/api/chat` streaming (NDJSON), JSON-schema `format`, `num_ctx` 8192, `/api/tags` status with "run `ollama pull …`" hints. Works on the server and in the browser.                                                                                                |
-| `providers/openai-compatible.ts` | `OpenAICompatibleProvider` — `/chat/completions` streaming (SSE), bearer auth, `/models` status.                                                                                                                                                                                     |
-| `providers/huggingface.ts`       | `HuggingFaceProvider` — preset of the OpenAI-compatible provider for the HF router.                                                                                                                                                                                                  |
-| `stream.ts`                      | `readLines`, `readNdjson`, `readSse` stream readers; `withStallTimeout()` aborts a stream that produces nothing for too long (`StallError`).                                                                                                                                         |
-| `json.ts`                        | `extractJson()` (fences, chatter, truncated output) and `parseWithSchema()` (zod).                                                                                                                                                                                                   |
-| `schema.ts`                      | `chatRequestSchema` — request validation for the API route (roles, sizes, model-name pattern).                                                                                                                                                                                       |
-| `client.ts`                      | Browser side: `streamChat(connection, …)` (server route or direct Ollama, guarded by a stall timeout: 240 s to first output, 90 s between chunks), `complete()`, `completeJson()` (schema → JSON Schema → constrained decoding → validation → one repair retry), `fetchLlmStatus()`. |
+| File                             | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `types.ts`                       | `LLMProvider` interface (`streamChat`, `status`), `ChatMessage`, `GenerateOptions`, `StreamEvent`, `ProviderError`.                                                                                                                                                                                                                                                                                                                                   |
+| `providers/ollama.ts`            | `OllamaProvider` — `/api/chat` streaming (NDJSON), JSON-schema `format`, `num_ctx` 8192, `/api/tags` status with "run `ollama pull …`" hints. Works on the server and in the browser.                                                                                                                                                                                                                                                                 |
+| `providers/openai-compatible.ts` | `OpenAICompatibleProvider` — `/chat/completions` streaming (SSE), bearer auth, `/models` status.                                                                                                                                                                                                                                                                                                                                                      |
+| `providers/huggingface.ts`       | `HuggingFaceProvider` — preset of the OpenAI-compatible provider for the HF router.                                                                                                                                                                                                                                                                                                                                                                   |
+| `stream.ts`                      | `readLines`, `readNdjson`, `readSse` stream readers; `withStallTimeout()` aborts a stream that produces nothing for too long (`StallError`).                                                                                                                                                                                                                                                                                                          |
+| `json.ts`                        | `extractJson()` (fences, chatter, truncated output) and `parseWithSchema()` (zod).                                                                                                                                                                                                                                                                                                                                                                    |
+| `schema.ts`                      | `chatRequestSchema` — request validation for the API route (roles, sizes, model-name pattern).                                                                                                                                                                                                                                                                                                                                                        |
+| `client.ts`                      | Browser side: `resolveMode()` (the "automatic" connection: server provider if reachable, else the in-browser model), `streamChat(connection, …)` guarded by a stall timeout (240 s to first output, 90 s between chunks; 300 s in the browser, where a request may queue behind another), `complete()`, `completeJson()` (schema → JSON Schema → constrained decoding → validation → one repair retry), `fetchLlmStatus()`, `rememberServerStatus()`. |
+| `browser-models.ts`              | Registry of in-browser models (id, label, download size, licence) and the default; only `q4` builds, for the reasons in DESIGN_DECISIONS §13a.                                                                                                                                                                                                                                                                                                        |
+| `in-browser.ts`                  | Main-thread handle to the LLM worker: lazily creates it, `loadBrowserModel()` (one-time download), `streamInBrowser()` (tokens via a Comlink callback turned into `StreamEvent`s), `browserModelStatus()` (cached? which backend?), and a worker-crash guard so a killed worker rejects instead of hanging.                                                                                                                                           |
+| `model-policy.ts`                | `modelAllowlist()` / `isModelAllowed()` — hosted providers serve only their configured model plus `LLM_ALLOWED_MODELS`, so a visitor cannot run an expensive model on the deployment's key.                                                                                                                                                                                                                                                           |
 
 ## `src/lib/server/` (server-only)
 
-| File            | What it does                                                                  |
-| --------------- | ----------------------------------------------------------------------------- |
-| `env.ts`        | zod-validated environment (`getServerEnv()`), empty strings treated as unset. |
-| `provider.ts`   | `getServerProvider()` — builds the provider chosen by `LLM_PROVIDER`.         |
-| `rate-limit.ts` | `RateLimiter` — sliding-window, per-IP, in memory.                            |
+| File            | What it does                                                                                       |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| `env.ts`        | zod-validated environment (`getServerEnv()`), empty strings treated as unset.                      |
+| `provider.ts`   | `getServerProvider()` — builds the provider chosen by `LLM_PROVIDER`; `getServerModelAllowlist()`. |
+| `rate-limit.ts` | `RateLimiter` — sliding-window, per-IP, in memory.                                                 |
 
 ## `src/app/api/llm/`
 
@@ -261,18 +275,19 @@ All client-side ("use client"), all built from `common.ts`:
 
 ## Scripts, tests and data
 
-| Path                                                      | What it is                                                                                                                                 |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `scripts/eval.ts`                                         | Offline evaluation (`npm run eval`, `--grid`, `--inspect --blocks`, `--scores`, `--model=…`, `--no-save`).                                 |
-| `scripts/generate-demo-docs.ts`                           | Generates the demo PDF (pdf-lib) and DOCX (docx).                                                                                          |
-| `scripts/dev/debug-verify.ts`                             | Calibrates citation verification thresholds on labelled pairs.                                                                             |
-| `scripts/dev/debug-jd.ts`                                 | Prints JD-match statuses and evidence for the demo data.                                                                                   |
-| `tests/unit/*.test.ts`                                    | Vitest: chunking, parsing, retrieval primitives, retriever, generation/citations, LLM providers & API validation, analysis, quality rules. |
-| `tests/e2e/smoke.spec.ts`                                 | Playwright: landing, demo ingestion in the browser, cited answer, pipeline panel, refusal.                                                 |
-| `public/demo/`                                            | Fictional demo documents.                                                                                                                  |
-| `public/eval/reference-results.json`                      | Output of `npm run eval -- --grid`, shown on the Evaluation and landing pages.                                                             |
-| `next.config.ts`                                          | Security headers (CSP etc.) and cross-origin isolation (COOP/COEP), which ONNX Runtime needs to run WebAssembly on several threads.        |
-| `vercel.json`, `.env.example`, `.github/workflows/ci.yml` | Deployment, configuration, CI.                                                                                                             |
+| Path                                                      | What it is                                                                                                                                                                                         |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/eval.ts`                                         | Offline evaluation (`npm run eval`, `--grid`, `--inspect --blocks`, `--scores`, `--model=…`, `--no-save`).                                                                                         |
+| `scripts/generate-demo-docs.ts`                           | Generates the demo PDF (pdf-lib) and DOCX (docx).                                                                                                                                                  |
+| `scripts/dev/debug-verify.ts`                             | Calibrates citation verification thresholds on labelled pairs.                                                                                                                                     |
+| `scripts/dev/debug-jd.ts`                                 | Prints JD-match statuses and evidence for the demo data.                                                                                                                                           |
+| `scripts/llm-bench/`                                      | Chooses the in-browser model: `build-fixtures.ts` makes prompts with the real pipeline, `run-bench.cjs` runs candidates in headless Chrome (WebGPU), `score.ts` grades them with the app's checks. |
+| `tests/unit/*.test.ts`                                    | Vitest: chunking, parsing, retrieval primitives, retriever, generation/citations, LLM providers & API validation, analysis, quality rules.                                                         |
+| `tests/e2e/smoke.spec.ts`                                 | Playwright: landing, demo ingestion in the browser, cited answer, pipeline panel, refusal.                                                                                                         |
+| `public/demo/`                                            | Fictional demo documents.                                                                                                                                                                          |
+| `public/eval/reference-results.json`                      | Output of `npm run eval -- --grid`, shown on the Evaluation and landing pages.                                                                                                                     |
+| `next.config.ts`                                          | Security headers (CSP etc.) and cross-origin isolation (COOP/COEP), which ONNX Runtime needs to run WebAssembly on several threads.                                                                |
+| `vercel.json`, `.env.example`, `.github/workflows/ci.yml` | Deployment, configuration, CI.                                                                                                                                                                     |
 
 ## Tracing a feature through the code: "Ask"
 

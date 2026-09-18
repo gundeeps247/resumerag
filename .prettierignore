@@ -5,3 +5,7 @@ public/demo
 public/eval
 package-lock.json
 src/components/ui
+
+# Generated benchmark prompts and raw model outputs
+scripts/llm-bench/fixtures.json
+scripts/llm-bench/results

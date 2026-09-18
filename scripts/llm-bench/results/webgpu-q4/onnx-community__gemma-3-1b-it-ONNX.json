@@ -1,0 +1,6 @@
+{
+  "modelId": "onnx-community/gemma-3-1b-it-ONNX",
+  "dtype": "q4",
+  "device": "webgpu",
+  "error": "page.evaluate: TypeError: network error"
+}

@@ -97,8 +97,8 @@ const challengeSchema = z.object({
         question: z.string(),
         followUp: z.string(),
         whatTheyTest: z.string(),
-        strongAnswer: z.array(z.string()).max(4),
-        sources: z.array(z.number().int()).max(3),
+        strongAnswer: z.array(z.string()).max(4).default([]),
+        sources: z.array(z.number().int()).max(3).default([]),
       }),
     )
     .max(8),

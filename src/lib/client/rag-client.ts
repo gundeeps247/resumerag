@@ -18,16 +18,17 @@ export function getRag(): Comlink.Remote<RagEngine> {
   if (!remote) {
     const worker = new Worker(new URL("../../workers/rag.worker.ts", import.meta.url), { type: "module", name: "rag-engine" });
     remote = Comlink.wrap<RagEngine>(worker);
-    void remote.onModelProgress(
-      Comlink.proxy((p: ModelLoadProgress) => {
-        for (const listener of progressListeners) listener(p);
-      }),
-    );
+    void remote.onModelProgress(Comlink.proxy(notifyModelProgress));
   }
   return remote;
 }
 
-/** Subscribes to model download / load progress events coming from the worker. */
+/** Publishes a download / load progress event (from the RAG worker or the in-browser LLM worker). */
+export function notifyModelProgress(progress: ModelLoadProgress) {
+  for (const listener of progressListeners) listener(progress);
+}
+
+/** Subscribes to model download / load progress events coming from the workers. */
 export function onModelProgress(listener: (p: ModelLoadProgress) => void): () => void {
   progressListeners.add(listener);
   return () => progressListeners.delete(listener);

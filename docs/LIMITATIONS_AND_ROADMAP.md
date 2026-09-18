@@ -21,14 +21,16 @@ An honest list of what ResumeRAG does not do well, why, and how a production tea
 ### 3. Local LLM quality and speed
 
 - **Current behaviour:** on a CPU-only laptop, `qwen2.5:7b-instruct` generates ~6 tokens/s (a paragraph takes 30–60 s); 3B models are faster but follow instructions less reliably. Small models occasionally miss nuance — for example, citing both "AUC 0.91" (resume) and "AUC 0.89" (report) without pointing out that they disagree, even though the prompt asks for it.
+- **The in-browser model is weaker still.** LFM2 1.2B (the default when no server model is configured) took ~15 s to the first token on a laptop integrated GPU and got one of the two structured-JSON workflows wrong first time; those features then rely on the repair retry and their deterministic fallbacks. Its smaller sibling invents details more often — in a live check LFM2 700M wrote "you managed 1 Kubernetes cluster in production on AWS" from documents saying the opposite, and the citation check marked the sentence unsupported. There is no grammar-constrained decoding in Transformers.js, which is the main reason JSON output is less reliable than through Ollama.
 - **Why:** quality scales with parameters; the project deliberately avoids paid APIs.
 - **Mitigations in the app:** streaming, compact prompts, deterministic-first workflows, a stall timeout so a hung model fails with a clear message (and workflows fall back to their deterministic results) instead of spinning forever, the Consistency Checker for contradictions, citation verification, and the option to use any OpenAI-compatible endpoint (a larger self-hosted or hosted model).
 - **Production fix:** a GPU inference server (vLLM/TGI) with a 14–70B open-weight model, or a commercial API behind the same provider interface.
 
 ### 4. Vercel compute limits
 
-- **Current behaviour:** the deployed site cannot run an LLM itself. It works in evidence-only mode, in private mode (the visitor's local Ollama), or with a hosted provider.
-- **Why:** serverless functions have no GPU, limited memory and execution-time limits.
+- **Current behaviour:** the deployed site cannot run an LLM in its serverless functions, so generation happens in the visitor's browser instead (LFM2 1.2B, ~850 MB one-time download), or through their own Ollama, or a hosted provider.
+- **Why:** serverless functions have no GPU, a 250 MB bundle limit and execution-time limits.
+- **Cost of the browser route:** the first answer waits for the download; quality is well below a 7B model; phones and machines without WebGPU are slow, and the weakest devices may not manage it at all (the app then falls back to evidence-only).
 - **Production fix:** dedicated inference infrastructure; the app would only change `LLM_PROVIDER`.
 
 ### 5. Data lives in one browser
@@ -110,17 +112,17 @@ An honest list of what ResumeRAG does not do well, why, and how a production tea
 
 Prioritised by impact on answer quality and user trust.
 
-| Priority | Item                                                                   | Why                                                  |
-| -------- | ---------------------------------------------------------------------- | ---------------------------------------------------- |
-| 1        | LLM-based query expansion beyond the hand-written interview vocabulary | Fixes the remaining abstract-question misses (§7)    |
-| 2        | NLI-based citation verification and contradiction detection            | Turns "similar" into "supported" (§10, §11)          |
-| 3        | OCR for scanned PDFs (tesseract.js, on demand)                         | Common real-world resume format (§1)                 |
-| 4        | Export / import knowledge base (encrypted file)                        | Backup and moving between devices (§5)               |
-| 5        | Self-hosted model/runtime files, offline mode                          | Privacy, reliability, tighter CSP (§16)              |
-| 6        | Table-aware parsing and chunking                                       | Better answers about metrics in reports (§2)         |
-| 7        | WebLLM "fully in-browser" generation mode                              | Zero-install full experience on WebGPU machines (§4) |
-| 8        | Optional sync with Postgres + pgvector + auth                          | Multi-device use (§5, §6)                            |
-| 9        | Speech mock interviews with in-browser Whisper                         | Practise speaking, not typing                        |
-| 10       | Spaced repetition for the question bank                                | Turn saved questions into a study plan               |
-| 11       | Larger labelled evaluation set, eval in CI                             | Catch regressions (§12)                              |
-| 12       | Printable prep report (PDF)                                            | Take preparation offline                             |
+| Priority | Item                                                                       | Why                                                                                   |
+| -------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 1        | LLM-based query expansion beyond the hand-written interview vocabulary     | Fixes the remaining abstract-question misses (§7)                                     |
+| 2        | NLI-based citation verification and contradiction detection                | Turns "similar" into "supported" (§10, §11)                                           |
+| 3        | OCR for scanned PDFs (tesseract.js, on demand)                             | Common real-world resume format (§1)                                                  |
+| 4        | Export / import knowledge base (encrypted file)                            | Backup and moving between devices (§5)                                                |
+| 5        | Self-hosted model/runtime files, offline mode                              | Privacy, reliability, tighter CSP (§16)                                               |
+| 6        | Table-aware parsing and chunking                                           | Better answers about metrics in reports (§2)                                          |
+| 7        | Grammar-constrained decoding for the in-browser model (or WebLLM/XGrammar) | Would make the structured workflows as reliable in the browser as through Ollama (§3) |
+| 8        | Optional sync with Postgres + pgvector + auth                              | Multi-device use (§5, §6)                                                             |
+| 9        | Speech mock interviews with in-browser Whisper                             | Practise speaking, not typing                                                         |
+| 10       | Spaced repetition for the question bank                                    | Turn saved questions into a study plan                                                |
+| 11       | Larger labelled evaluation set, eval in CI                                 | Catch regressions (§12)                                                               |
+| 12       | Printable prep report (PDF)                                                | Take preparation offline                                                              |

@@ -249,9 +249,9 @@ export default function AskPage() {
             <div className="border-warning/30 bg-warning/5 mb-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-xs">
               <TriangleAlert className="text-warning mt-0.5 size-3.5 shrink-0" />
               <span>
-                No language model connected — answers will show extracted evidence only.{" "}
+                No language model available — answers will show extracted evidence only.{" "}
                 <Link href="/settings#model" className="font-medium underline underline-offset-2">
-                  Connect Ollama
+                  Choose a model
                 </Link>
               </span>
             </div>

@@ -1,8 +1,9 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
-import { Cpu, Database, HardDrive, Lock, RefreshCw, Server, ShieldCheck, Trash2, Wrench } from "lucide-react";
+import { Cpu, Database, Download, HardDrive, Lock, RefreshCw, Server, ShieldCheck, Trash2, Wrench } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +21,16 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDocuments } from "@/hooks/use-kb";
 import { useLlmStatus } from "@/hooks/use-llm-status";
+import { useModelProgress } from "@/hooks/use-model-progress";
 import { deleteAllData, reindexDocuments } from "@/lib/client/documents";
 import { DEFAULT_SETTINGS, resetSettings, updateSettings, useSettings } from "@/lib/client/settings";
+import { BROWSER_MODELS, getBrowserModel } from "@/lib/llm/browser-models";
+import { browserModelStatus, loadBrowserModel } from "@/lib/llm/in-browser";
 import { EMBEDDING_MODELS, getEmbeddingModel } from "@/lib/rag/embeddings/models";
 import type { RetrievalMode } from "@/lib/rag/types";
 import { cn } from "@/lib/utils";
@@ -111,9 +116,29 @@ function ModelSection() {
       <Row label="Connection" hint="How the browser reaches a model.">
         <RadioGroup value={llm.mode} onValueChange={(v) => setLlm({ mode: v as typeof llm.mode, model: undefined })} className="gap-3">
           <label className="has-[:checked]:border-brand flex cursor-pointer items-start gap-3 rounded-lg border p-3">
+            <RadioGroupItem value="auto" className="mt-0.5" />
+            <div>
+              <p className="text-sm font-medium">Automatic (recommended)</p>
+              <p className="text-muted-foreground text-xs">
+                Uses the model configured on the server when one is reachable, and otherwise the in-browser model — so answers are always
+                generated, even on a deployment with no model of its own.
+              </p>
+            </div>
+          </label>
+          <label className="has-[:checked]:border-brand flex cursor-pointer items-start gap-3 rounded-lg border p-3">
+            <RadioGroupItem value="in-browser" className="mt-0.5" />
+            <div>
+              <p className="text-sm font-medium">In-browser model (free and private)</p>
+              <p className="text-muted-foreground text-xs">
+                A small open-weight model runs in this tab on your GPU (or CPU). Downloaded once, then cached by the browser; prompts and
+                documents never leave your device.
+              </p>
+            </div>
+          </label>
+          <label className="has-[:checked]:border-brand flex cursor-pointer items-start gap-3 rounded-lg border p-3">
             <RadioGroupItem value="server" className="mt-0.5" />
             <div>
-              <p className="text-sm font-medium">Server provider (default)</p>
+              <p className="text-sm font-medium">Server provider</p>
               <p className="text-muted-foreground text-xs">
                 The Next.js API route calls the provider set in environment variables (Ollama locally, or an optional hosted API). Keys
                 never reach the browser.
@@ -125,13 +150,14 @@ function ModelSection() {
             <div>
               <p className="text-sm font-medium">Ollama on this computer (private mode)</p>
               <p className="text-muted-foreground text-xs">
-                The browser talks directly to Ollama on your machine — ideal on the deployed site: prompts and documents never leave your
-                computer.
+                The browser talks directly to Ollama on your machine — the fastest option if you run it, and prompts stay on your computer.
               </p>
             </div>
           </label>
         </RadioGroup>
       </Row>
+
+      {(llm.mode === "auto" || llm.mode === "in-browser") && <InBrowserModelRow />}
 
       {llm.mode === "browser-ollama" && (
         <Row
@@ -181,7 +207,7 @@ function ModelSection() {
         </Row>
       )}
 
-      {status?.requiresAccessCode && llm.mode === "server" && (
+      {status?.requiresAccessCode && (llm.mode === "server" || llm.mode === "auto") && (
         <Row label="Access code" hint="This deployment protects its model endpoint with a shared code.">
           <Input type="password" value={llm.accessCode ?? ""} onChange={(e) => setLlm({ accessCode: e.target.value })} />
         </Row>
@@ -207,6 +233,84 @@ function ModelSection() {
         <Switch checked={settings.strictGrounding} onCheckedChange={(v) => updateSettings((s) => ({ ...s, strictGrounding: v }))} />
       </Row>
     </Section>
+  );
+}
+
+/** Picks the in-browser model and pre-downloads it, so the first question is not a long wait. */
+function InBrowserModelRow() {
+  const settings = useSettings();
+  const progress = useModelProgress();
+  const info = getBrowserModel(settings.llm.browserModel);
+  const [state, setState] = useState<{ cached: boolean; backend: string | null; webgpu: boolean } | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const check = useCallback(() => {
+    void browserModelStatus(info.id).then((s) =>
+      setState({ cached: s.inBrowser.cached, backend: s.inBrowser.backend, webgpu: s.inBrowser.webgpu }),
+    );
+  }, [info.id]);
+  useEffect(check, [check]);
+
+  const download = async () => {
+    setLoading(true);
+    try {
+      await loadBrowserModel(info.id);
+      toast.success(`${info.label} is ready in this browser.`);
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setLoading(false);
+      check();
+    }
+  };
+
+  const downloading = progress?.model === info.id && progress.active;
+  return (
+    <Row label="In-browser model" hint="Runs on your device. Larger models answer better but take longer to download and run.">
+      <div className="space-y-3">
+        <Select
+          value={info.id}
+          onValueChange={(v) => updateSettings((s) => ({ ...s, llm: { ...s.llm, browserModel: v } }))}
+          disabled={loading || downloading}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {BROWSER_MODELS.map((m) => (
+              <SelectItem key={m.id} value={m.id}>
+                {m.label} · {m.downloadMb} MB · {m.license}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3 text-xs">
+          <div className="space-y-0.5">
+            <p className="text-sm font-medium">{info.description}</p>
+            <p className="text-muted-foreground">
+              {info.parameters} parameters ·{" "}
+              <a href={info.licenseUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
+                {info.license}
+              </a>
+            </p>
+            <p className="text-muted-foreground">
+              {state?.webgpu ? "WebGPU available" : "No WebGPU — will run on the CPU (slower)"}
+              {state?.backend ? ` · loaded on ${state.backend === "webgpu" ? "the GPU" : "the CPU"}` : ""}
+              {" · "}
+              {downloading
+                ? `downloading ${progress.loadedMb.toFixed(0)} / ${progress.totalMb.toFixed(0)} MB`
+                : state?.cached
+                  ? "already downloaded"
+                  : `${info.downloadMb} MB download on first use`}
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={download} disabled={loading || downloading || state?.cached === undefined}>
+            {loading || downloading ? <Spinner /> : <Download />}
+            {state?.cached ? "Load now" : "Download now"}
+          </Button>
+        </div>
+      </div>
+    </Row>
   );
 }
 

@@ -1,0 +1,99 @@
+{
+  "modelId": "onnx-community/LFM2-700M-ONNX",
+  "dtype": "q4",
+  "device": "webgpu",
+  "loadMs": 31958.315000012517,
+  "results": [
+    {
+      "id": "imbalance",
+      "text": "To address class imbalance in the churn model, you employed XGBoost's `scale_pos_weight` parameter, assigning a weight of 0.5 to the minority class (churned customers) and setting it to 1 for the majority class (not churned). This adjustment helped balance the class distribution in the dataset. However, you noted that while this method improved the model's performance, it resulted in poorly calibrated predicted probabilities, indicating that further refinement might be needed. [1][2]",
+      "promptTokens": 1016,
+      "newTokens": 108,
+      "firstTokenMs": 7302.815000012517,
+      "totalMs": 11375.330000013113,
+      "decodeTokPerS": 26.2736908274087
+    },
+    {
+      "id": "internship-project",
+      "text": "You built a customer churn prediction system using XGBoost that achieved an AUC of 0.91 on a time-based holdout set, according to your resume [1].",
+      "promptTokens": 1046,
+      "newTokens": 39,
+      "firstTokenMs": 3619.469999998808,
+      "totalMs": 4717.004999995232,
+      "decodeTokPerS": 34.62304163432039
+    },
+    {
+      "id": "bm25",
+      "text": "I couldn't find enough evidence in your uploaded documents to answer this confidently. The document mentions that keyword search struggles with exact citation queries, but does not specify why keyword search was added. However, based on the context provided, it appears that the addition of keyword search (BM25) was likely made to improve the system's performance in retrieving relevant passages for exact keyword searches, as indicated by the mention of a BM25 index built with the rank_bm25 library. This suggests that while keyword search alone may not be sufficient for all types of queries, incorporating it helps address limitations in exact match retrieval, especially for phrases where exact keywords are used.",
+      "promptTokens": 994,
+      "newTokens": 133,
+      "firstTokenMs": 3445.5549999922514,
+      "totalMs": 7105.704999998212,
+      "decodeTokPerS": 36.064095733722674
+    },
+    {
+      "id": "leakage",
+      "text": "The data leakage problem encountered was that the feature 'account_status_updated_at' was only populated after a customer had churned, leading to incorrect labeling of data. This resulted in a lower-than-expected AUC of 0.97 due to label leakage, where about 22% of active, paying customers were incorrectly labeled as churned. The solution involved removing this feature and switching to a strict time-based train/validation/test split to improve the model's performance.\n\nSources:\n[1] finlytics-churn-project-report.docx\n[2] behavioral-story-notes.md\n[3] finlytics-churn-project-report.docx\n[4] finlytics-churn-project-report.docx",
+      "promptTokens": 1106,
+      "newTokens": 158,
+      "firstTokenMs": 4074.6799999922514,
+      "totalMs": 8433.414999991655,
+      "decodeTokPerS": 36.01962495999905
+    },
+    {
+      "id": "disagreement",
+      "text": "During my time at Finlytics, I disagreed with the product manager regarding the definition of churn. The product manager initially defined churn as \"no login for 30 days,\" based on a preference for customers who only log in upon receiving their salary. However, I argued that this definition would misclassify approximately 22% of active, paying customers as churned due to the delayed login period. After analyzing the data, I proposed a revised definition of \"account closed OR no transactions for 60 days,\" which better aligned with the actual churn pattern observed in our dataset. This experience taught me the importance of data-driven discussions over personal opinions in resolving disagreements.\n\nReference(s):\n[1] Finlytics-Churn-Project-Report.docx\n[2] Northwind-Company-Notes.md\n[3] Northwind-Company-Notes.md\n[4] Finlytics-Churn-Project-Report.docx",
+      "promptTokens": 1144,
+      "newTokens": 200,
+      "firstTokenMs": 4138.885000005364,
+      "totalMs": 9524.20000000298,
+      "decodeTokPerS": 36.95234169219221
+    },
+    {
+      "id": "final-auc",
+      "text": "The final churn model achieved an ROC-AUC of 0.89. This result is cited in [1].",
+      "promptTokens": 1195,
+      "newTokens": 26,
+      "firstTokenMs": 4139.680000007153,
+      "totalMs": 4892.079999998212,
+      "decodeTokPerS": 33.22700691161227
+    },
+    {
+      "id": "salary",
+      "text": "The provided context does not specify the salary negotiated for the Finlytics internship. I couldn't find the exact salary information within the given sources. Please provide the relevant document or confirm if it was accidentally omitted. Once I have access to the document, I will be able to determine the salary negotiated for the internship.",
+      "promptTokens": 1136,
+      "newTokens": 67,
+      "firstTokenMs": 3927.359999999404,
+      "totalMs": 5779.219999998808,
+      "decodeTokPerS": 35.63984318470146
+    },
+    {
+      "id": "kubernetes",
+      "text": "You managed 1 Kubernetes cluster in production on AWS. [1]",
+      "promptTokens": 1049,
+      "newTokens": 17,
+      "firstTokenMs": 3888.0249999910593,
+      "totalMs": 4358.359999999404,
+      "decodeTokPerS": 34.018306100367035
+    },
+    {
+      "id": "json-questions",
+      "text": "```json\n{\n  \"questions\": [\n    {\n      \"question\": \"What challenges did you face when deploying a machine learning model from your Finlytics project to a production environment?\",\n      \"whyAsked\": \"To assess your experience with deploying ML models beyond the development phase, particularly the gap between research and production deployment.\",\n      \"sources\": [2]\n    },\n    {\n      \"question\": \"Describe the data engineering pipeline you built for Finlytics, focusing on how you handled data ingestion, transformation, and storage. How did you ensure scalability and reliability?\",\n      \"whyAsked\": \"To evaluate your understanding of end-to-end data engineering processes and your ability to design robust systems for handling large datasets.\",\n      \"sources\": [1]\n    },\n    {\n      \"question\": \"How do you measure the performance of your search results, especially considering the latency constraints discussed in your experience with Finlytics?\",\n      \"whyAsked\": \"To gauge your understanding of real-world search performance metrics and your ability to optimize for user experience under resource limitations.\",\n      \"sources\": [6]\n    }\n  ]\n}\n```",
+      "promptTokens": 1193,
+      "newTokens": 247,
+      "firstTokenMs": 4262.475000008941,
+      "totalMs": 11174.660000011325,
+      "decodeTokPerS": 35.58932522782813
+    },
+    {
+      "id": "json-evaluation",
+      "text": "{\"scores\":{\"relevance\":2, \"correctness\":5, \"evidence\":[{\"item\": \"Acknowledge the imbalance issue\", \"score\":4, \"explanation\": \"The candidate correctly identifies the problem of class imbalance and explains its impact on model performance.\"}, {\"item\": \"Explain the solution\", \"score\":5, \"explanation\": \"The candidate provides a clear and concise explanation of why they chose to use SMOTE oversampling and how it improved the model's performance.\"}, {\"item\": \"Discuss hyperparameter tuning\", \"score\":4, \"explanation\": \"The candidate mentions using Optuna for hyperparameter tuning, showing awareness of the importance of optimizing model parameters.\"}],\"strengths\":[\"Strong acknowledgment of the problem\", \"Clear explanation of the solution\", \"Proper use of hyperparameter tuning\"], \"improvements\":[\"Could provide more specific details about the SMOTE implementation, such as the method used (e.g., K-nearest neighbors) and the number of neighbors used.\", \"Consider discussing the potential impact of SMOTE on model generalization and how it might affect other metrics like precision and recall.\"], \"betterAnswerOutline\": \"Here's a revised version addressing the improvements: \\n\\n**Revised:**\\n\\nThe high rate of churn (approximately 7%) at Finlytics presented a significant challenge for our churn prediction model. To address this, we employed SMOTE oversampling to balance the class distribution. This technique created synthetic samples for the minority class (churned customers), effectively increasing the representation of these instances in the training set. \\n\\nWe carefully implemented SMOTE with k=5 neighbors to preserve the overall data distribution while boosting the minority class. The results showed a substantial improvement in the F1-score, demonstrating the effectiveness of this approach in mitigating class imbalance. \\n\\nFurthermore, we rigorously tuned the model using Optuna, systematically exploring a range of hyperparameters to find the optimal configuration. This iterative process ensured that our model achieved the best possible performance on the balanced dataset. \\n\\nWhile SMOTE helped, we acknowledged that it might introduce some noise due to the generation of synthetic data points. Therefore, we also evaluated the model's performance using other metrics, such as precision and recall, to gain a more comprehensive understanding of its strengths and weaknesses. \\n\\nThis experience highlighted the importance of carefully considering the implications of data augmentation techniques like SMOTE, especially when dealing with imbalanced datasets.\"}",
+      "promptTokens": 1191,
+      "newTokens": 534,
+      "firstTokenMs": 4128.92499999702,
+      "totalMs": 19185.545000001788,
+      "decodeTokPerS": 35.39971122335765
+    }
+  ],
+  "params": "0.7B"
+}

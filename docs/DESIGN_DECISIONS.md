@@ -180,25 +180,51 @@ create index on chunks using hnsw (embedding vector_cosine_ops);
 
 **Options**
 
-| Option                                 | Verdict                                                                                                |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| OpenAI / Anthropic APIs                | Excellent quality, but paid — not allowed as a dependency                                              |
-| Hugging Face Inference                 | Free token with limited credit — optional adapter                                                      |
-| WebLLM (LLM in the browser via WebGPU) | Fully free and private, but 1–4 GB downloads, WebGPU-only, 1–3B models struggle with structured output |
-| Ollama (local)                         | Free, private, easy model switching, JSON-schema constrained decoding                                  |
-| OpenAI-compatible endpoint             | Covers vLLM, LM Studio, llama.cpp, Groq/OpenRouter free tiers, and paid APIs if a user wants them      |
+| Option                                      | Verdict                                                                                          |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| OpenAI / Anthropic APIs                     | Excellent quality, but paid — not allowed as a dependency                                        |
+| Hugging Face Inference                      | Free token with limited credit — optional adapter                                                |
+| Ollama (local)                              | Free, private, easy model switching, JSON-schema constrained decoding                            |
+| OpenAI-compatible endpoint                  | Covers vLLM, LM Studio, llama.cpp, hosted free tiers, and paid APIs if a user wants them         |
+| **In-browser model (Transformers.js/ONNX)** | Free, private and needs no key or account, at the cost of a one-time download and modest quality |
+| An LLM inside a Vercel function             | Impossible: no GPU, a 250 MB bundle limit and a 60 s cap                                         |
 
-**Decision:** an `LLMProvider` interface (`src/lib/llm/types.ts`) with **Ollama as default**, plus OpenAI-compatible and Hugging Face implementations; a browser-direct Ollama mode for deployed sites; and an evidence-only fallback when nothing is reachable.
+**Decision:** an `LLMProvider` interface (`src/lib/llm/types.ts`) with Ollama, OpenAI-compatible and Hugging Face implementations, a browser-direct Ollama mode, **an in-browser model (§13a)** and an evidence-only fallback when nothing is reachable. The connection defaults to **automatic**: the server's provider when it has a working one (Ollama during local development), otherwise the in-browser model.
 
-**Why:** the app must work with zero paid services and degrade gracefully. The provider abstraction is ~150 lines and every implementation uses plain `fetch`, so the same Ollama class runs on the server and in the browser.
+**Why:** the app must work with zero paid services, zero configuration and no signup — a deployed portfolio has no server model, so the browser is the only place left to generate. The provider abstraction is ~150 lines and every HTTP implementation uses plain `fetch`, so the same Ollama class runs on the server and in the browser.
 
-**Trade-off:** answer quality and speed depend on the user's hardware (≈6–10 tokens/s on a CPU-only laptop).
+**Trade-off:** answer quality and speed depend on the visitor's hardware, and "automatic" means the same question can be answered by different models on different machines — the answer footer and the trace always name the model that actually wrote it.
+
+## 13a. Which in-browser model
+
+Generation in the tab only helps if a model small enough to download is still careful enough to stay grounded. So the choice was measured rather than guessed: `scripts/llm-bench` builds prompts with the app's own pipeline (hybrid retrieval, reranking, context building, the real system prompts), runs every candidate in headless Chrome over WebGPU, and grades the replies with the app's own citation, number and schema checks — six grounded questions, two questions the documents cannot answer, and two structured-JSON workflows.
+
+| Model (4-bit, q4)       | Download | Facts found | Answers cited | Invented numbers | Correct refusals | Valid JSON | First token | Decode                                         |
+| ----------------------- | -------- | ----------- | ------------- | ---------------- | ---------------- | ---------- | ----------- | ---------------------------------------------- |
+| **LFM2 1.2B** (default) | 850 MB   | **92%**     | **100%**      | **0**            | **2/2**          | 1/2        | 14.8 s      | 19.6 tok/s                                     |
+| LFM2 700M (option)      | 559 MB   | 92%         | 83%           | 1                | 1/2              | 1/2        | 4.3 s       | 34.4 tok/s                                     |
+| Qwen3 0.6B              | 919 MB   | 67%         | 100%          | 0                | 2/2              | 0/2        | 8.1 s       | 5.5 tok/s                                      |
+| Qwen2.5 0.5B            | 786 MB   | 50%         | 33%           | 0                | 0/2              | 1/2        | 5.0 s       | 8.2 tok/s                                      |
+| gemma-3 1B              | 859 MB   | —           | —             | —                | —                | —          | —           | hung the GPU device (`DXGI_ERROR_DEVICE_HUNG`) |
+| Qwen2.5 1.5B            | 1788 MB  | —           | —             | —                | —                | —          | —           | could not create a session                     |
+
+Measured on a laptop AMD integrated GPU; a discrete GPU or Apple Silicon is several times faster.
+
+**Decision:** **LFM2 1.2B** by default, with LFM2 700M offered for small or slow devices.
+
+**Why:** it was the only candidate that cited every answer, invented no numbers and refused both unanswerable questions — the three properties this product is built on. Qwen2.5 0.5B failed all three; Qwen3 0.6B stayed honest but missed a third of the facts and was the slowest to write; the two 1B+ alternatives did not run at all on mainstream integrated graphics, which rules them out as a default for strangers' laptops.
+
+**Findings worth keeping:**
+
+- **16-bit activations (`q4f16`) are not safe to ship.** They are ~40% smaller, and on the benchmark GPU they produced repeated tokens and random Chinese — while the same weights in `q4` (32-bit activations) answered correctly and matched the CPU output exactly. The registry therefore only lists `q4` builds.
+- **Structured output is the weak spot.** Even the default model gets one of the two JSON workflows wrong first time (no grammar-constrained decoding exists in Transformers.js), so those features rely on the repair retry and the deterministic fallbacks of §25 — and the schemas now default missing optional arrays instead of rejecting an otherwise good reply.
+- **Small models still hallucinate**, which is why nothing here replaces the confidence gate (§16) and per-sentence verification (§17): in a live check, LFM2 700M answered "you managed 1 Kubernetes cluster in production on AWS" from documents that say the opposite, and the verification panel marked it unsupported.
 
 ## 14. Default local model
 
-**Decision:** `qwen2.5:7b-instruct` by default, `llama3.2` (3B) recommended for slow machines.
+**Decision:** for Ollama, `qwen2.5:7b-instruct` by default, `llama3.2` (3B) recommended for slow machines. For the browser, LFM2 1.2B (§13a).
 
-**Why:** Qwen2.5-7B follows grounding instructions and JSON schemas reliably; 3B models are ~1.6× faster but more often ignore formatting rules or miss nuance. Both are selectable at runtime.
+**Why:** Qwen2.5-7B follows grounding instructions and JSON schemas reliably; 3B models are ~1.6× faster but more often ignore formatting rules or miss nuance. Both are selectable at runtime. A 7B model through Ollama remains clearly better than anything that fits in a browser download, which is why "automatic" prefers a configured server model over the in-browser one.
 
 ## 15. Structured output from local models
 

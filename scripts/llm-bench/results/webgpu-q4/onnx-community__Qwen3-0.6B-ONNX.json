@@ -1,0 +1,99 @@
+{
+  "modelId": "onnx-community/Qwen3-0.6B-ONNX",
+  "dtype": "q4",
+  "device": "webgpu",
+  "loadMs": 10610.734999984503,
+  "results": [
+    {
+      "id": "imbalance",
+      "text": "I handled class imbalance in the churn model by using XGBoost's scale_pos_weight parameter, which allowed me to balance the imbalanced classes effectively. [1]",
+      "promptTokens": 963,
+      "newTokens": 34,
+      "firstTokenMs": 10472.240000009537,
+      "totalMs": 13902.594999998808,
+      "decodeTokPerS": 9.619995598153313
+    },
+    {
+      "id": "internship-project",
+      "text": "During my internship at Finlytics, I built a customer churn prediction system using XGBoost that achieved an AUC of 0.91 on the holdout set. [1]",
+      "promptTokens": 1003,
+      "newTokens": 40,
+      "firstTokenMs": 6302.675000011921,
+      "totalMs": 13979.890000015497,
+      "decodeTokPerS": 5.0799671495434
+    },
+    {
+      "id": "bm25",
+      "text": "The addition of keyword search (BM25) to LexiSearch was based on the performance of the hybrid retrieval method, which showed better results than the standalone BM25 approach. This was due to the fact that hybrid retrieval was clearly best, and the performance difference between BM25 and the hybrid retrieval method was significant. [1]",
+      "promptTokens": 977,
+      "newTokens": 70,
+      "firstTokenMs": 4353.395000010729,
+      "totalMs": 14994.760000020266,
+      "decodeTokPerS": 6.4841305603123445
+    },
+    {
+      "id": "leakage",
+      "text": "I ran into a data leakage problem where the feature \"account_status_updated_at\" was only populated after a customer had churned, leading to the label being leaked. This issue was addressed by removing the feature and implementing a time-based split, resulting in a lower AUC of 0.89. [1]",
+      "promptTokens": 1065,
+      "newTokens": 65,
+      "firstTokenMs": 8850.314999997616,
+      "totalMs": 28948.794999986887,
+      "decodeTokPerS": 3.1843204063209836
+    },
+    {
+      "id": "disagreement",
+      "text": "I couldn't find enough evidence in your uploaded documents to answer this confidently. The sources provided do not include a direct mention of a disagreement at work. However, the information can be inferred from the content of the sources:\n\n- In the **finlytics-churn-project-report.docx**, the story about Alex Rivera's disagreement with the churn label was mentioned, indicating a disagreement occurred during an internship.\n- In the **northwind-company-notes.md**, the interview process includes a scenario where a team disagreed on a feature implementation, which could be interpreted as a disagreement at work.\n\nTherefore, the answer is: [1] In the **finlytics-churn-project-report.docx**, Alex Rivera disagreed with the churn label definition during his internship, and [2] in the **northwind-company-notes.md**, a team disagreement occurred during the interview process.",
+      "promptTokens": 1090,
+      "newTokens": 172,
+      "firstTokenMs": 5985.535000026226,
+      "totalMs": 49142.35000002384,
+      "decodeTokPerS": 3.962294251788726
+    },
+    {
+      "id": "final-auc",
+      "text": "The final churn model achieved a ROC-AUC of 0.89 [1].",
+      "promptTokens": 1156,
+      "newTokens": 19,
+      "firstTokenMs": 6992.5999999940395,
+      "totalMs": 12813.40000000596,
+      "decodeTokPerS": 3.0923584386962504
+    },
+    {
+      "id": "salary",
+      "text": "I couldn't find enough evidence in your uploaded documents to answer this confidently.",
+      "promptTokens": 1098,
+      "newTokens": 16,
+      "firstTokenMs": 4633.670000016689,
+      "totalMs": 8626.79500001669,
+      "decodeTokPerS": 3.7564564094537487
+    },
+    {
+      "id": "kubernetes",
+      "text": "I couldn't find enough evidence in your uploaded documents to answer this confidently. The sources provided do not mention any Kubernetes clusters managed in production.",
+      "promptTokens": 997,
+      "newTokens": 29,
+      "firstTokenMs": 11928.65000000596,
+      "totalMs": 14150.310000002384,
+      "decodeTokPerS": 12.603188606737787
+    },
+    {
+      "id": "json-questions",
+      "text": "```json\n{\n  \"questions\": [\n    {\n      \"question\": \"What specific tools or technologies did you use in your project that demonstrate your understanding of data processing pipelines and vector indexing techniques?\",\n      \"whyAsked\": \"The FAISS IVF-Flat index mentioned in the project report demonstrates the candidate's ability to apply vector indexing techniques, which is crucial for performance in large-scale data analysis.\",\n      \"sources\": [\n        {\n          \"id\": \"3\",\n          \"document\": \"finlytics-churn-project-report.docx\",\n          \"type\": \"Project report\",\n          \"location\": \"10. My Contribution\"\n        }\n      ]\n    },\n    {\n      \"question\": \"How did you approach feature engineering and model training in your project, and what specific tools or methods did you use?\",\n      \"whyAsked\": \"The mention of using PyTorch and scikit-learn in the resume highlights the candidate's familiarity with machine learning frameworks, which is essential for a technical interview.\",\n      \"sources\": [\n        {\n          \"id\": \"1\",\n          \"document\": \"alex-rivera-resume.pdf\",\n          \"type\": \"Resume\",\n          \"location\": \"page 2 · Alex Rivera > SKILLS\"\n        }\n      ]\n    },\n    {\n      \"question\": \"Can you describe a situation where you had to handle a complex data pipeline or a high-performance vector index, and how did you approach it?\",\n      \"whyAsked\": \"The mention of FAISS IVF-Flat index in the project report indicates the candidate's ability to handle large-scale vector operations, which is a strong indicator of technical proficiency.\",\n      \"sources\": [\n        {\n          \"id\": \"3\",\n          \"document\": \"finlytics-churn-project-report.docx\",\n          \"type\": \"Project report\",\n          \"location\": \"10. My Contribution\"\n        }\n      ]\n    }\n  ]\n}\n```",
+      "promptTokens": 1128,
+      "newTokens": 394,
+      "firstTokenMs": 5222.174999982119,
+      "totalMs": 120039.78000000119,
+      "decodeTokPerS": 3.4228200457580935
+    },
+    {
+      "id": "json-evaluation",
+      "text": "```json\n{\n  \"scores\": {\n    \"relevance\": 3,\n    \"correctness\": 3,\n    \"evidence\": 3,\n    \"depth\": 3,\n    \"structure\": 3,\n    \"clarity\": 3\n  },\n  \"strengths\": [\n    \"The answer correctly addresses class imbalance by mentioning SMOTE and tuning with Optuna, which aligns with the sources' mention of using these techniques.\",\n    \"It provides specific examples (SMOTE, Optuna) and references the sources' mention of class imbalance in the project report (source #1).\",\n    \"The answer explains the solution clearly, showing understanding of how class imbalance was handled.\"\n  ],\n  \"improvements\": [\n    \"The answer could elaborate more on the impact of class imbalance on the model's performance, especially considering the source mentions it was a heavy imbalanced class.\",\n    \"It could include additional details about the implementation process, such as how the feature audit identified the issue (source #3).\"\n  },\n  \"betterAnswerOutline\": \"Finlytics addressed class imbalance by using SMOTE and tuning with Optuna. This approach improved the F1 score significantly. The answer correctly identifies the use of these methods and references the sources' mention of class imbalance in the project report. The solution is well-explained, and the example of the feature audit (source #3) is properly cited.\"\n}\n```",
+      "promptTokens": 1126,
+      "newTokens": 296,
+      "firstTokenMs": 16694.960000008345,
+      "totalMs": 104174.27500000596,
+      "decodeTokPerS": 3.372225765599651
+    }
+  ],
+  "params": "0.6B"
+}

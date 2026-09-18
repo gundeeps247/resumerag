@@ -51,7 +51,7 @@ const questionSchema = z.object({
   question: z.string(),
   category: z.enum(["recruiter", "technical", "project", "behavioral", "ai_ml", "system_design", "follow_up", "challenge"]),
   whyAsked: z.string(),
-  sources: z.array(z.number().int()).max(3),
+  sources: z.array(z.number().int()).max(3).default([]),
 });
 
 export interface NextQuestion {
@@ -132,9 +132,9 @@ const evaluationSchema = z.object({
     structure: z.number().int().min(1).max(5),
     clarity: z.number().int().min(1).max(5),
   }),
-  strengths: z.array(z.string()).max(3),
-  improvements: z.array(z.string()).max(3),
-  betterAnswerOutline: z.string(),
+  strengths: z.array(z.string()).max(3).default([]),
+  improvements: z.array(z.string()).max(3).default([]),
+  betterAnswerOutline: z.string().default(""),
 });
 
 /**

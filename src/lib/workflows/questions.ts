@@ -66,7 +66,9 @@ const DIFFICULTY_TEXT: Record<Difficulty, string> = {
 };
 
 const schema = z.object({
-  questions: z.array(z.object({ question: z.string(), whyAsked: z.string(), sources: z.array(z.number().int()).max(3) })).max(10),
+  questions: z
+    .array(z.object({ question: z.string(), whyAsked: z.string(), sources: z.array(z.number().int()).max(3).default([]) }))
+    .max(10),
 });
 
 export interface GeneratedQuestion {
