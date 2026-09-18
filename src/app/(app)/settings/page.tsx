@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
-import { Cpu, Database, Download, HardDrive, Lock, RefreshCw, Server, ShieldCheck, Trash2, Wrench } from "lucide-react";
+import { ChevronDown, Cpu, Database, Download, HardDrive, Lock, RefreshCw, Server, ShieldCheck, Trash2, Wrench } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Dialog,
   DialogClose,
@@ -40,13 +41,24 @@ export default function SettingsPage() {
     <PageContainer className="max-w-4xl">
       <PageHeader
         title="Settings"
-        description="Everything is stored in this browser. Defaults are tuned with the evaluation set — change them in the RAG Playground first to see the effect."
+        description="Everything is stored in this browser. The defaults are tuned with the evaluation set, so most people only need the first two sections."
       />
       <ModelSection />
-      <RetrievalSection />
-      <IndexingSection />
       <PrivacySection />
-      <DeveloperSection />
+      {/* Retrieval and indexing defaults come from the evaluation; they are here for people who want them. */}
+      <Collapsible>
+        <CollapsibleTrigger className="bg-card text-muted-foreground hover:text-foreground group flex w-full items-center justify-between gap-2 rounded-xl border p-4 text-sm">
+          <span>
+            <span className="text-foreground font-medium">Advanced</span> · retrieval, indexing and developer options
+          </span>
+          <ChevronDown className="size-4 transition-transform group-data-[state=open]:rotate-180" />
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-6 pt-6">
+          <RetrievalSection />
+          <IndexingSection />
+          <DeveloperSection />
+        </CollapsibleContent>
+      </Collapsible>
     </PageContainer>
   );
 }
