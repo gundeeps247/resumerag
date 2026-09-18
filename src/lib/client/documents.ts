@@ -11,6 +11,7 @@ import { DEMO_DOCUMENTS } from "@/lib/demo";
 import { FILE_LIMITS } from "@/lib/rag/config";
 import { FileValidationError, formatFromName, validateFile } from "@/lib/rag/parsing/validate";
 import type { DocType, KbDocument, SupportedFormat } from "@/lib/rag/types";
+import { ensureDemoReconciled, startDemoSession } from "./demo-session";
 import { getRag } from "./rag-client";
 import type { AppSettings } from "./settings";
 
@@ -142,6 +143,9 @@ export async function addPastedText(title: string, text: string, docType: DocTyp
 
 /** Loads the fictional "Alex Rivera" demo documents. */
 export async function loadDemoWorkspace(settings: AppSettings): Promise<AddResult> {
+  // A demo left by a previous visit is cleared first, so these documents are not skipped as
+  // duplicates and then deleted by the startup cleanup.
+  await ensureDemoReconciled();
   const files = await Promise.all(
     DEMO_DOCUMENTS.map(async (demo) => {
       const response = await fetch(`/demo/${demo.file}`);
@@ -149,7 +153,10 @@ export async function loadDemoWorkspace(settings: AppSettings): Promise<AddResul
       return { name: demo.file, bytes: new Uint8Array(await response.arrayBuffer()), docType: demo.docType, source: "demo" as const };
     }),
   );
-  return addFiles(files, settings);
+  const result = await addFiles(files, settings);
+  // From here on, anything the visitor creates is demo material too.
+  startDemoSession();
+  return result;
 }
 
 export async function deleteDocument(docId: string): Promise<void> {

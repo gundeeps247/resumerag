@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useKbStats } from "@/hooks/use-kb";
 import { saveQuestion } from "@/lib/client/question-bank";
+import { isDemoActive } from "@/lib/client/demo-session";
 import { useSettings } from "@/lib/client/settings";
 import { getDb, getKbVersion } from "@/lib/db/schema";
 import { newId } from "@/lib/format";
@@ -28,6 +29,7 @@ async function saveXray(result: ResumeXray | null) {
   await getDb().analyses.put({
     id: "resume-xray",
     kind: "resume-xray",
+    ...(isDemoActive() ? { demo: true as const } : {}),
     title: "Resume X-ray",
     createdAt: Date.now(),
     kbVersion: await getKbVersion(),

@@ -1,5 +1,6 @@
 "use client";
 
+import { isDemoActive } from "./demo-session";
 import { getDb } from "@/lib/db/schema";
 import type { Difficulty, QuestionCategory, SavedQuestion } from "@/lib/db/records";
 import { newId } from "@/lib/format";
@@ -25,6 +26,7 @@ export async function saveQuestion(input: {
     status: "new",
     origin: input.origin,
     createdAt: Date.now(),
+    ...(isDemoActive() ? { demo: true as const } : {}),
   };
   await db.questions.add(record);
   return true;

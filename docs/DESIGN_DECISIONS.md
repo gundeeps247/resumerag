@@ -314,7 +314,19 @@ Measured on a laptop AMD integrated GPU; a discrete GPU or Apple Silicon is seve
 
 **Trade-off:** heuristics can be bypassed; small models can still be influenced. Documented honestly.
 
-## 27. Ideas evaluated and rejected (or deferred)
+## 27. Demo workspace lifecycle
+
+**Decision:** the demo is created only when someone asks for it, and it is deleted when they close the site — along with anything generated from it. Records created while the demo is loaded (chats, mock sessions, saved questions, analyses) are tagged `demo: true`, so the cleanup is exact and never touches the visitor's own documents or work.
+
+**How "closed" is detected:** a heartbeat, not an unload handler. While any tab holds demo data it writes a timestamp to `localStorage` every 10 s; at startup, demo data whose timestamp is missing or more than 60 s old belonged to a previous visit and is removed (`src/lib/client/demo-session.ts`).
+
+**Why not `beforeunload`/`pagehide`:** a page being torn down cannot reliably finish IndexedDB deletions, and with several tabs open one closing does not mean the site is closed. The heartbeat is correct in both cases and needs no coordination between tabs.
+
+**Trade-off:** closing and reopening within a minute keeps the demo, which also means an accidental close or a browser restart does not throw away a session in progress. The loader waits for the startup reconciliation first, so returning with a stale demo cannot leave the visitor with documents that were skipped as duplicates and then deleted.
+
+**Tested:** `tests/unit/demo-session.test.ts` runs the cleanup against a real IndexedDB (fake-indexeddb) and asserts that demo documents, text, vectors and tagged records go while the visitor's own document, chat, session, question and analysis stay; a browser test loads the demo, reloads, closes the browser and reopens to confirm it is gone.
+
+## 28. Ideas evaluated and rejected (or deferred)
 
 | Idea                                            | Decision                    | Reason                                                                                                                                                                          |
 | ----------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

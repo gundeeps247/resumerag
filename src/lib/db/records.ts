@@ -42,6 +42,8 @@ export type Difficulty = "easy" | "medium" | "hard";
 
 export interface SavedQuestion {
   id: string;
+  /** Created while the demo workspace was loaded, so it is removed with it. */
+  demo?: true;
   question: string;
   category: QuestionCategory;
   difficulty: Difficulty;
@@ -70,6 +72,8 @@ export interface MockTurn {
 
 export interface MockSessionRecord {
   id: string;
+  /** Created while the demo workspace was loaded, so it is removed with it. */
+  demo?: true;
   title: string;
   focus: string;
   status: "active" | "completed";
@@ -81,6 +85,8 @@ export interface MockSessionRecord {
 
 export interface SavedAnalysis {
   id: string;
+  /** Created while the demo workspace was loaded, so it is removed with it. */
+  demo?: true;
   kind: "resume-xray" | "jd-match" | "deep-dive" | "consistency" | "star" | "questions";
   title: string;
   createdAt: number;

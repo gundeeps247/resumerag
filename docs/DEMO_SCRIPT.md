@@ -7,7 +7,7 @@ A rehearsed walkthrough for interviews. **Bold** lines are what to say; the rest
 1. `ollama serve` is running and `ollama list` shows `qwen2.5:7b-instruct` (or `llama3.2` on a slow laptop).
 2. `npm run dev`, open http://localhost:3000.
 3. **Settings → Developer & appearance → Developer mode: on** (shows latency and token counts).
-4. **Knowledge base:** the demo workspace is loaded and all six documents say "N chunks". Models are warm (open the Ask page once; the top bar shows no download pill).
+4. **Knowledge base:** the demo workspace is loaded **in the window you will present from** — it is deleted once the site is closed, so load it after opening that window, not the night before — and all six documents say "N chunks". Models are warm (open the Ask page once; the top bar shows no download pill).
 5. Pre-run the slow parts so you can show results instantly if time is short:
    - **Ask:** "How did I handle class imbalance in the churn model?" (keep this conversation).
    - **Job match:** run the analysis once.

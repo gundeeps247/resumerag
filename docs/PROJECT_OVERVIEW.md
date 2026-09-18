@@ -3,7 +3,7 @@
 _One document that explains what this project is, how it works, how it is put together, and why it is built this way._
 
 If you only read one file in this repository, read this one. Deeper material lives in
-[ARCHITECTURE.md](ARCHITECTURE.md) (diagrams), [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) (27 decisions in detail),
+[ARCHITECTURE.md](ARCHITECTURE.md) (diagrams), [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) (28 decisions in detail),
 [CODEBASE_GUIDE.md](CODEBASE_GUIDE.md) (file-by-file tour), [PROJECT_EXPLAINED_SIMPLY.md](PROJECT_EXPLAINED_SIMPLY.md)
 (every term explained from zero) and [LIMITATIONS_AND_ROADMAP.md](LIMITATIONS_AND_ROADMAP.md) (what it does not do).
 
@@ -242,6 +242,7 @@ most RAG demos never show: BM25 alone happily answers questions about jobs you n
   strict Content-Security-Policy restricts scripts, connections and workers to what the runtime genuinely needs.
 - **API abuse:** the LLM proxy validates every request with zod, caps output tokens, rate-limits per IP and supports an
   access code for public deployments.
+- **The demo is opt-in and temporary.** It is created only when someone asks for it and removed when they close the site, together with anything generated from it (chats, mock interviews, saved questions, analyses), which is tagged as demo material when created. A stale-heartbeat check at startup does the deleting, because an unload handler cannot reliably finish database work and a visitor may have several tabs open.
 - **Demo data is fictional.** The six sample documents describe an invented person, "Alex Rivera", so the demo can be
   shared without exposing anyone's real resume.
 
@@ -255,7 +256,7 @@ most RAG demos never show: BM25 alone happily answers questions about jobs you n
 | Size            | ~18.6k lines of TypeScript/TSX; the framework-independent RAG core is ~7.4k of that                                                                                                                                                                                                               |
 | Structure       | `src/lib/rag` (pure pipeline: parsing, chunking, embeddings, retrieval, reranking, generation, analysis, evaluation) · `src/lib/workflows` (feature logic) · `src/lib/llm` (providers plus the in-browser model) · `src/workers` (RAG and LLM workers) · `src/app` (19 routes) · `src/components` |
 | Portability     | The RAG core depends on neither React, Next.js nor IndexedDB, so the identical code runs in the browser worker, in Node (`npm run eval`) and in unit tests                                                                                                                                        |
-| Tests           | 120 unit tests (chunking, parsing, BM25, fusion, expansion, retrieval, confidence, citation verification, analysis rules, JD scoring, LLM providers, API validation) plus a Playwright end-to-end test that ingests the demo set, asks a question and asserts both a citation and a refusal       |
+| Tests           | 125 unit tests (chunking, parsing, BM25, fusion, expansion, retrieval, confidence, citation verification, analysis rules, JD scoring, LLM providers, API validation) plus a Playwright end-to-end test that ingests the demo set, asks a question and asserts both a citation and a refusal       |
 | Quality gates   | `npm run check` = typecheck + lint + tests + build; Prettier; GitHub Actions CI runs all four                                                                                                                                                                                                     |
 | Reproducibility | `npm run demo:generate` builds the sample PDFs/DOCX; `npm run eval` regenerates the benchmark the app displays                                                                                                                                                                                    |
 
@@ -284,7 +285,7 @@ cp .env.example .env.local        # optional: pick an LLM provider
 npm run dev                       # http://localhost:3000
 ```
 
-Click **Load demo knowledge base** on the dashboard to ingest the six fictional documents, then ask
+Click **Load demo workspace** on Home to ingest the six fictional documents (removed when you close the site), then ask
 _"What machine learning project did I build during my internship?"_ and open **How this answer was generated**.
 
 Answers are generated out of the box: with no provider configured the app runs LFM2 1.2B in the browser (a one-time
@@ -303,7 +304,7 @@ the chunk-size sweep) · `npm run demo:generate` (rebuild the demo documents) ·
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | [PROJECT_EXPLAINED_SIMPLY.md](PROJECT_EXPLAINED_SIMPLY.md) | Every term from zero — embeddings, BM25, RRF, rerankers — with analogies and a full worked example |
 | [ARCHITECTURE.md](ARCHITECTURE.md)                         | Diagrams: system, ingestion, chunking, retrieval, generation, data model                           |
-| [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md)                 | 27 decisions with alternatives, evidence and trade-offs                                            |
+| [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md)                 | 28 decisions with alternatives, evidence and trade-offs                                            |
 | [CODEBASE_GUIDE.md](CODEBASE_GUIDE.md)                     | File-by-file tour and how to extend it                                                             |
 | [INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md)                   | 58 questions an interviewer could ask about this project, answered                                 |
 | [INTERVIEW_CHEATSHEET.md](INTERVIEW_CHEATSHEET.md)         | One page to read before the interview                                                              |

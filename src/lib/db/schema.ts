@@ -23,6 +23,8 @@ export interface ConversationRecord {
   title: string;
   createdAt: number;
   updatedAt: number;
+  /** Created while the demo workspace was loaded, so it is removed with it. */
+  demo?: true;
 }
 
 export interface MessageRecord {

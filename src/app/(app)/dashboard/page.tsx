@@ -25,6 +25,7 @@ import { PageContainer, PageHeader } from "@/components/common/page-header";
 import { PageSkeleton } from "@/components/common/page-skeleton";
 import { ScoreBar } from "@/components/common/score-bar";
 import { StatTile } from "@/components/common/severity";
+import { DemoNotice } from "@/components/documents/demo-notice";
 import { LoadDemoButton } from "@/components/documents/demo-button";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -103,7 +104,8 @@ function FirstRun() {
           <h2 className="text-xl font-semibold tracking-tight">Start with your own documents — or the demo</h2>
           <p className="text-muted-foreground text-sm">
             Add a resume and anything that describes your work: project reports, notes, a job description. They are parsed and indexed in
-            this browser and never uploaded. The demo loads six fictional documents so you can try everything in a minute.
+            this browser and never uploaded. The demo loads six fictional documents so you can try everything in a minute; it is removed
+            again when you close the site.
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             <LoadDemoButton variant="default" />
@@ -179,6 +181,7 @@ function Ready({ stats, data }: { stats: KbStats; data: DashboardData }) {
 
   return (
     <div className="space-y-6">
+      <DemoNotice />
       <Steps done={done} />
 
       {/* The two things this app is for. */}

@@ -149,7 +149,7 @@ Each stage earns its place: fusion raises recall over semantic search, reranking
 | Parsing        | **unpdf** (pdf.js) with layout reconstruction, **mammoth** (DOCX), custom Markdown/TXT                 | Page numbers and heading structure for citations                                                                    |
 | Generation     | **LFM2 1.2B in the browser** (default on the deployed site), Ollama, OpenAI-compatible or Hugging Face | Free, private and keyless out of the box ([how it was chosen](docs/DESIGN_DECISIONS.md#13a-which-in-browser-model)) |
 | Validation     | **zod** (API requests, LLM JSON outputs, env)                                                          | Model output is untrusted input                                                                                     |
-| Testing        | Vitest (120 unit tests), Playwright (E2E smoke), offline eval script                                   |                                                                                                                     |
+| Testing        | Vitest (125 unit tests), Playwright (E2E smoke), offline eval script                                   |                                                                                                                     |
 
 ## Project structure
 
@@ -200,14 +200,14 @@ cp .env.example .env.local      # optional; defaults work with local Ollama
 npm run dev                     # http://localhost:3000
 ```
 
-Then open the app, click **Try the demo workspace**, and ask _"How did I handle class imbalance in the churn model?"_. The first run downloads the embedding and reranking models (~60 MB) into the browser cache.
+Then open the app, click **Try the demo workspace** (fictional documents, removed when you close the site), and ask _"How did I handle class imbalance in the churn model?"_. The first run downloads the embedding and reranking models (~60 MB) into the browser cache.
 
 ### Useful scripts
 
 | Command                                                 | What it does                                                                                                                                                                                  |
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm run dev` / `npm run build` / `npm start`           | Develop, build, serve                                                                                                                                                                         |
-| `npm test`                                              | 120 unit tests (chunking, parsing, BM25, fusion, query expansion, retrieval, confidence, citations and verification, analysis rules, JD scoring, LLM providers and streaming, API validation) |
+| `npm test`                                              | 125 unit tests (chunking, parsing, BM25, fusion, query expansion, retrieval, confidence, citations and verification, analysis rules, JD scoring, LLM providers and streaming, API validation) |
 | `npm run test:e2e`                                      | Playwright smoke test (run `npx playwright install chromium` once)                                                                                                                            |
 | `npm run eval`                                          | Offline retrieval evaluation (`-- --grid` adds a chunk-size sweep, `-- --inspect --blocks` prints how each demo document was parsed and chunked)                                              |
 | `npm run typecheck` / `npm run lint` / `npm run format` | Quality checks                                                                                                                                                                                |
@@ -330,7 +330,7 @@ OCR for scanned PDFs (tesseract.js) · NLI-based citation verification · LLM-ba
 
 Models: [BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5), [cross-encoder/ms-marco-MiniLM-L-6-v2](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) (ONNX conversions by [Xenova](https://huggingface.co/Xenova)), Qwen2.5 and Llama 3.2 via [Ollama](https://ollama.com). Libraries: [Transformers.js](https://github.com/huggingface/transformers.js), [unpdf](https://github.com/unjs/unpdf), [mammoth](https://github.com/mwilliamson/mammoth.js), [Dexie](https://dexie.org), [Comlink](https://github.com/GoogleChromeLabs/comlink), [shadcn/ui](https://ui.shadcn.com).
 
-All demo data (the persona "Alex Rivera", Finlytics, CartWave, Northwind Analytics) is fictional.
+All demo data (the persona "Alex Rivera", Finlytics, CartWave, Northwind Analytics) is fictional, and the demo workspace exists only while the site is open: loading it is always an explicit choice, and it — with any chats, mock interviews, saved questions or analyses made from it — is deleted on the next visit.
 
 ## License
 

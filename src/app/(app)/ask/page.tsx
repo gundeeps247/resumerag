@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useKbStats } from "@/hooks/use-kb";
 import { useLlmStatus } from "@/hooks/use-llm-status";
+import { isDemoActive } from "@/lib/client/demo-session";
 import { useSettings } from "@/lib/client/settings";
 import { getDb, type MessageRecord } from "@/lib/db/schema";
 import { SUGGESTED_QUESTIONS } from "@/lib/demo";
@@ -67,7 +68,13 @@ export default function AskPage() {
     let convId = conversationId;
     if (!convId) {
       convId = newId();
-      await db.conversations.add({ id: convId, title: truncate(question, 80), createdAt: Date.now(), updatedAt: Date.now() });
+      await db.conversations.add({
+        id: convId,
+        title: truncate(question, 80),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        ...(isDemoActive() ? { demo: true as const } : {}),
+      });
       setConversationId(convId);
     }
     const history = (messages ?? []).map((m) => ({ role: m.role, content: m.content }));

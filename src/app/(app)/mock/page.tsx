@@ -29,6 +29,7 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { saveQuestion } from "@/lib/client/question-bank";
+import { isDemoActive } from "@/lib/client/demo-session";
 import { useSettings } from "@/lib/client/settings";
 import { fallbackReason } from "@/lib/workflows/common";
 import type { Difficulty, MockSessionRecord, MockTurn } from "@/lib/db/records";
@@ -230,6 +231,7 @@ async function createSession(cfg: MockConfig): Promise<MockSessionRecord> {
     createdAt: now,
     updatedAt: now,
     turns: [],
+    ...(isDemoActive() ? { demo: true as const } : {}),
   };
   await getDb().mockSessions.add(record);
   return record;

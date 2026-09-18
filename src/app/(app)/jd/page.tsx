@@ -14,6 +14,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDocuments } from "@/hooks/use-kb";
 import { saveQuestion } from "@/lib/client/question-bank";
+import { isDemoActive } from "@/lib/client/demo-session";
 import { useSettings } from "@/lib/client/settings";
 import { getDb, getKbVersion } from "@/lib/db/schema";
 import type { Importance } from "@/lib/rag/analysis/jd";
@@ -67,6 +68,7 @@ function JdMatch() {
       await getDb().analyses.put({
         id: `jd-match:${jdId}`,
         kind: "jd-match",
+        ...(isDemoActive() ? { demo: true as const } : {}),
         title: r.jdName,
         createdAt: Date.now(),
         kbVersion: await getKbVersion(),

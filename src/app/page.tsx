@@ -135,7 +135,8 @@ export default function LandingPage() {
                 </Button>
               </div>
               <p className="text-muted-foreground text-xs">
-                The demo loads six fictional documents for “Alex Rivera”. No sign-up, nothing uploaded.
+                The demo loads six fictional documents for “Alex Rivera”. No sign-up, nothing uploaded, and it is removed when you close the
+                site.
               </p>
             </div>
             <ProductPreview />

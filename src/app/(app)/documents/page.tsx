@@ -8,6 +8,7 @@ import { LoadDemoButton } from "@/components/documents/demo-button";
 import { DocumentList, DocumentListSkeleton } from "@/components/documents/document-list";
 import { DocumentViewer } from "@/components/documents/document-viewer";
 import { PasteDialog } from "@/components/documents/paste-dialog";
+import { DemoNotice } from "@/components/documents/demo-notice";
 import { UploadDropzone } from "@/components/documents/upload-dropzone";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,8 @@ export default function DocumentsPage() {
           </>
         }
       />
+
+      <DemoNotice />
 
       <UploadDropzone />
 
