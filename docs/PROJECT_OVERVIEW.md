@@ -39,12 +39,18 @@ that was built, and a per-sentence verification of the answer against the cited 
 
 ## 2. What you can do with it
 
+The app has **two primary features** — Ask and Practise — and the rest are tools you reach for when you
+need them. Home lays that out as three steps (add documents → ask → practise); the sidebar keeps the two
+primary features at the top, groups the specialised tools under "More tools", and hides the engineering
+views behind "Under the hood". Long work always shows itself: a progress bar under the header while a model
+downloads or documents index, and skeletons instead of blank pages.
+
 | Feature                 | What it does                                                                                                                                                                | Grounding rule                                                                                 |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | **Ask**                 | Conversational Q&A over your documents, with follow-up handling and scope filters ("only my resume", "only projects")                                                       | Refuses below the confidence gate; every sentence verified against its citation                |
 | **Resume X-ray**        | Extracts every claim from your resume and flags the risky ones: unquantified impact, buzzwords, unclear ownership, weak skill claims, big numbers, cross-document conflicts | Rules are deterministic and explainable; "what supports this?" runs a retrieval per claim      |
 | **Project deep dive**   | Explains any detected project at five levels (one line → recruiter → engineer → deep → architecture), plus a ladder of progressively harder follow-ups                      | Explanations are generated only from retrieved passages of that project's documents            |
-| **JD match**            | Extracts requirements from a job description and scores each one: strong / partial / gap — with the evidence quoted                                                         | Never credits a skill that is not in your documents; "gap" is a real answer                    |
+| **Job match**           | Extracts requirements from a job description and scores each one: strong / partial / gap — with the evidence quoted                                                         | Never credits a skill that is not in your documents; "gap" is a real answer                    |
 | **Mock interview**      | Adaptive interview: harder follow-ups when you answer well, easier when you struggle; rubric scoring; a better-answer outline                                               | Your answer is checked sentence-by-sentence against your own documents, so bluffing is flagged |
 | **"Grill my resume"**   | Generates the hostile questions an interviewer would actually ask about each bullet                                                                                         | Each question points at the bullet and passage that provoked it                                |
 | **STAR builder**        | Turns evidence into a Situation-Task-Action-Result story, separating **facts from your documents** from **suggested phrasing**                                              | Refuses to build a story with no evidence behind it                                            |

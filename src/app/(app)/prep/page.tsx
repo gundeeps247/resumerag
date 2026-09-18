@@ -54,9 +54,9 @@ export default function PrepStudioPage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="Interview prep"
-        title="Prep studio"
-        description="Specialised tools built on the same retrieval pipeline as Ask. Every output cites the passages from your documents it is based on."
+        eyebrow="More tools"
+        title="Prep tools"
+        description="Specialised tools for when Ask and Practise are not enough. All of them use the same retrieval pipeline, and every output cites the passages it came from."
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -114,7 +114,7 @@ export default function PrepStudioPage() {
         >
           <Target className="text-brand size-5" />
           <div className="flex-1">
-            <p className="font-medium">JD match</p>
+            <p className="font-medium">Job match</p>
             <p className="text-muted-foreground text-sm">Requirement-by-requirement comparison with a job description.</p>
           </div>
           <ArrowRight className="text-muted-foreground size-4" />

@@ -1,3 +1,4 @@
+import { ActivityBar } from "@/components/app-shell/activity-bar";
 import { AppSidebar } from "@/components/app-shell/app-sidebar";
 import { RagBridge } from "@/components/app-shell/rag-bridge";
 import { Topbar } from "@/components/app-shell/topbar";
@@ -9,6 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <SidebarInset className="min-w-0">
         <Topbar />
+        <ActivityBar />
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
       </SidebarInset>
       <RagBridge />

@@ -35,37 +35,44 @@ const PIPELINE = [
   { icon: Binary, title: "Embed", text: "An open-source model turns every chunk into a 384-dimensional meaning vector — in your browser." },
   { icon: Merge, title: "Hybrid search", text: "Semantic search and BM25 keyword search, fused with reciprocal rank fusion." },
   { icon: ListOrdered, title: "Rerank", text: "A cross-encoder re-reads the top candidates together with the question." },
-  { icon: PenLine, title: "Generate", text: "A local LLM answers only from the numbered passages — or refuses." },
+  {
+    icon: PenLine,
+    title: "Generate",
+    text: "A language model — by default one running in this browser — answers only from the numbered passages, or refuses.",
+  },
   { icon: BadgeCheck, title: "Cite & verify", text: "Every sentence is checked against the passage it cites." },
 ];
 
-const FEATURES = [
+/** The two things the app is for. Everything else supports these. */
+const MAIN_FEATURES = [
   {
     icon: MessagesSquare,
-    title: "Grounded answers",
-    text: "Ask anything about your experience. Every claim cites the exact passage, page and section it came from.",
+    title: "Ask your documents",
+    text: "Ask anything about your experience and get an answer built only from your own passages — each one cited by page and section, and refused outright when the evidence is not there.",
+    cta: "Ask a question",
   },
   {
-    icon: ScanSearch,
-    title: "Resume X-ray & Grill mode",
-    text: "Flags vague ownership, unquantified impact and expert claims — then asks the hardest legitimate questions.",
+    icon: UsersRound,
+    title: "Practise an interview",
+    text: "Questions drawn from your documents, adapting to how well you answer, with rubric feedback and a check of every claim you make against your own evidence.",
+    cta: "Start practising",
   },
+];
+
+/** Supporting tools, listed compactly so they are discoverable without competing. */
+const MORE_FEATURES = [
+  {
+    icon: ScanSearch,
+    title: "Resume X-ray",
+    text: "Flags vague ownership, unquantified impact and expert claims, then asks the hardest legitimate questions.",
+  },
+  { icon: Target, title: "Job match", text: "Requirement by requirement. A skill only counts when your own documents prove it." },
   {
     icon: FolderGit2,
     title: "Project deep dive",
-    text: "Explain a project in 30 seconds or in depth, and climb a ladder of increasingly hard follow-ups.",
+    text: "Explain a project in 30 seconds or in depth, then climb a ladder of harder follow-ups.",
   },
-  { icon: Target, title: "JD match", text: "Requirement-by-requirement evidence. A skill only counts when your own documents prove it." },
-  {
-    icon: UsersRound,
-    title: "Mock interview",
-    text: "Adaptive questions, rubric scoring, and a check of your answer's claims against your documents.",
-  },
-  {
-    icon: Star,
-    title: "STAR builder",
-    text: "Behavioural answers from real experiences, with facts and suggested wording kept visibly apart.",
-  },
+  { icon: Star, title: "STAR builder", text: "Behavioural answers from real experiences, facts and suggested wording kept apart." },
   {
     icon: GitCompareArrows,
     title: "Consistency checker",
@@ -163,17 +170,35 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl space-y-10 px-4 py-20 sm:px-6">
             <SectionHeading
               eyebrow="Features"
-              title="Not another “chat with your PDF”"
-              text="Specialised interview workflows, all built on the same grounded retrieval pipeline."
+              title="Two things to do, and tools for the rest"
+              text="Not another “chat with your PDF”: ask your documents, practise answering, and reach for a specialised tool when you need one."
             />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {FEATURES.map((f) => (
-                <div key={f.title} className="bg-card rounded-xl border p-5">
-                  <div className="bg-brand/10 text-brand grid size-9 place-items-center rounded-lg">
-                    <f.icon className="size-[18px]" />
+            <div className="grid gap-4 md:grid-cols-2">
+              {MAIN_FEATURES.map((f) => (
+                <div key={f.title} className="bg-card flex flex-col gap-4 rounded-2xl border p-6">
+                  <div className="bg-brand/10 text-brand grid size-10 place-items-center rounded-lg">
+                    <f.icon className="size-5" />
                   </div>
-                  <p className="mt-4 font-medium">{f.title}</p>
-                  <p className="text-muted-foreground mt-1.5 text-sm">{f.text}</p>
+                  <div className="flex-1 space-y-2">
+                    <p className="text-lg font-semibold tracking-tight">{f.title}</p>
+                    <p className="text-muted-foreground text-sm">{f.text}</p>
+                  </div>
+                  <Button asChild variant="outline" className="self-start">
+                    <Link href="/dashboard">
+                      {f.cta} <ArrowRight />
+                    </Link>
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {MORE_FEATURES.map((f) => (
+                <div key={f.title} className="bg-card flex items-start gap-3 rounded-xl border p-4">
+                  <f.icon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">{f.title}</p>
+                    <p className="text-muted-foreground mt-0.5 text-xs">{f.text}</p>
+                  </div>
                 </div>
               ))}
             </div>

@@ -5,6 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Sweeping bar for work with no known total (indexing, embedding). */
+  --animate-indeterminate: indeterminate 1.4s ease-in-out infinite;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -225,4 +228,13 @@
 
 @utility scrollbar-thin {
   scrollbar-width: thin;
+}
+
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
 }

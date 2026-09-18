@@ -32,7 +32,7 @@ export default function JdMatchPage() {
     <PageContainer>
       <PageHeader
         eyebrow="Interview prep"
-        title="JD match"
+        title="Job match"
         description="Each requirement in the job description is searched against your own documents — never against the JD itself — so a skill only counts as matched when you can point to evidence."
       />
       <RequireDocuments what="JD matching">

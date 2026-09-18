@@ -9,7 +9,7 @@ flowchart TB
   user(("User"))
   subgraph browser["Browser (user's device)"]
     direction TB
-    pages["Next.js pages (React)<br/>Dashboard · Knowledge base · Ask · Prep studio<br/>Mock interview · JD match · RAG lab · Settings"]
+    pages["Next.js pages (React)<br/>Home · Documents · Ask · Practise (mock)<br/>Prep tools · Job match · RAG lab · Settings"]
     workflows["Workflows (src/lib/workflows)<br/>ask · resume-xray · deep-dive · jd-match · mock · star · questions · consistency"]
     client["Worker client (Comlink proxy)"]
     subgraph worker["RAG Web Worker (src/workers/rag.worker.ts)"]

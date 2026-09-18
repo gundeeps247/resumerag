@@ -2,7 +2,7 @@ import {
   ClipboardList,
   FlaskConical,
   Gauge,
-  LayoutDashboard,
+  House,
   Library,
   MessagesSquare,
   Settings,
@@ -19,31 +19,39 @@ export interface NavItem {
 }
 
 export interface NavGroup {
-  label: string;
+  label?: string;
   items: NavItem[];
+  /** Collapsed by default: useful but not part of the main flow. */
+  collapsible?: boolean;
 }
 
+/**
+ * The app has two features that matter to a user preparing for an interview — asking questions
+ * about their documents, and practising answers — plus the documents they rest on. Everything
+ * else is a specialised tool or an engineering view, so it sits in a secondary group instead of
+ * competing for attention.
+ */
 export const NAV_GROUPS: NavGroup[] = [
   {
-    label: "Workspace",
     items: [
-      { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard, description: "Readiness overview" },
-      { title: "Knowledge base", href: "/documents", icon: Library, description: "Upload and inspect documents" },
-      { title: "Ask", href: "/ask", icon: MessagesSquare, description: "Grounded Q&A with citations" },
+      { title: "Home", href: "/dashboard", icon: House, description: "Where to start" },
+      { title: "Documents", href: "/documents", icon: Library, description: "Upload and inspect documents" },
+      { title: "Ask", href: "/ask", icon: MessagesSquare, description: "Grounded answers with citations" },
+      { title: "Practise", href: "/mock", icon: UsersRound, description: "Mock interview with feedback" },
     ],
   },
   {
-    label: "Interview prep",
+    label: "More tools",
     items: [
-      { title: "Prep studio", href: "/prep", icon: ClipboardList, description: "Resume X-ray, deep dives, STAR" },
-      { title: "Mock interview", href: "/mock", icon: UsersRound, description: "Practice with feedback" },
-      { title: "JD match", href: "/jd", icon: Target, description: "Compare against a job description" },
+      { title: "Prep tools", href: "/prep", icon: ClipboardList, description: "Resume X-ray, projects, questions, STAR" },
+      { title: "Job match", href: "/jd", icon: Target, description: "Compare yourself with a job description" },
     ],
   },
   {
-    label: "RAG lab",
+    label: "Under the hood",
+    collapsible: true,
     items: [
-      { title: "Playground", href: "/lab", icon: FlaskConical, description: "Experiment with retrieval" },
+      { title: "Retrieval playground", href: "/lab", icon: FlaskConical, description: "Experiment with retrieval" },
       { title: "Evaluation", href: "/evaluation", icon: Gauge, description: "Measure retrieval quality" },
     ],
   },

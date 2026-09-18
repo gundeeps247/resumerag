@@ -10,7 +10,7 @@ A rehearsed walkthrough for interviews. **Bold** lines are what to say; the rest
 4. **Knowledge base:** the demo workspace is loaded and all six documents say "N chunks". Models are warm (open the Ask page once; the top bar shows no download pill).
 5. Pre-run the slow parts so you can show results instantly if time is short:
    - **Ask:** "How did I handle class imbalance in the churn model?" (keep this conversation).
-   - **JD match:** run the analysis once.
+   - **Job match:** run the analysis once.
    - **Mock interview:** answer one question.
 6. Close other heavy apps — local generation is CPU-bound.
 
@@ -62,15 +62,15 @@ New chat:
 
 **"There's no evidence, so it refuses — without even calling the language model. On my evaluation set it refuses every unanswerable question."**
 
-### 2:50 — Interview intelligence: JD match (40 s)
+### 2:50 — Interview intelligence: Job match (40 s)
 
-Go to **JD match** (pre-run).
+Go to **Job match** (pre-run).
 
 **"Each requirement in the job description is searched against my documents only — the JD itself is excluded by a metadata filter, so a skill only counts if I can point to evidence."** Scroll to the Kubernetes/MLflow row. **"Here it found my own note that I haven't used MLflow, so it's a gap, even though MLflow appears elsewhere as future work. Status is decided deterministically; the LLM only writes the preparation plan."**
 
 ### 3:30 — Resume X-ray or mock interview (30 s)
 
-**Prep studio → Resume X-ray**, top claim:
+**Prep tools → Resume X-ray**, top claim:
 
 **"It predicts which resume claims an interviewer will challenge. This one says 'Helped reduce churn by 18%' — unclear ownership plus a big number. And it caught that my resume says AUC 0.91 while my report says 0.89."** Click **What supports this?** to show evidence from other documents.
 
