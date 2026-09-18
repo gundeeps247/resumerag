@@ -94,6 +94,20 @@ export async function runLlmJson<T extends z.ZodType>(
   }
 }
 
+/**
+ * Why a workflow fell back to its deterministic output, in words a user can act on. A missing
+ * model and a model that answered badly are different problems, and the UI should not claim the
+ * first when it hit the second.
+ */
+export function fallbackReason(error?: string): string {
+  if (!error) return "generated without a language model";
+  if (/no llm provider|not reachable|cannot reach|requires an access code|only runs in the browser/i.test(error)) {
+    return "no language model was reachable";
+  }
+  if (/expected format|no json|not valid|json/i.test(error)) return "the language model did not return usable JSON";
+  return "the language model could not complete the request";
+}
+
 /** Each document's title: its first top-level heading, or its parsed title. */
 export async function loadDocTitles(docIds: string[]): Promise<Record<string, string>> {
   const contents = await getDb().contents.bulkGet([...new Set(docIds)]);

@@ -81,7 +81,7 @@ export async function* streamInBrowser(id: string, messages: ChatMessage[], opti
     engine.generate(
       requestId,
       id,
-      { messages, maxTokens: options.maxTokens ?? 800, temperature: options.temperature ?? 0.2 },
+      { messages, maxTokens: options.maxTokens ?? 800, temperature: options.temperature ?? 0.2, json: Boolean(options.json) },
       Comlink.proxy((text: string) => queue.push(text)),
     ),
     crashed,

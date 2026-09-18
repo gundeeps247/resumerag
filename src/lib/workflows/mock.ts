@@ -12,7 +12,7 @@ import type { Difficulty, MockTurn, QuestionCategory } from "@/lib/db/records";
 import { judgeSupport, lexicalSupport, splitAnswerSentences } from "@/lib/rag/generation/citations";
 import type { BuiltContext } from "@/lib/rag/generation/context";
 import { GROUNDING_RULES } from "@/lib/rag/generation/prompts";
-import { CANDIDATE_FILTER, gatherEvidence, runLlmJson, validSources } from "./common";
+import { CANDIDATE_FILTER, fallbackReason, gatherEvidence, runLlmJson, validSources } from "./common";
 
 export type MockFocus = "profile" | "technical" | "behavioral" | "project";
 
@@ -117,7 +117,7 @@ Ask the next interview question. It must be specific to the candidate's document
       category: CATEGORY_BY_FOCUS[config.focus],
       evidenceChunkIds: source ? [source.result.chunk.id] : [],
     },
-    whyAsked: "Template question (no language model connected).",
+    whyAsked: `Template question — ${fallbackReason(outcome.error)}.`,
     context,
     error: outcome.error,
   };

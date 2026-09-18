@@ -6,7 +6,7 @@ import type { AppSettings } from "@/lib/client/settings";
 import type { Difficulty, QuestionCategory } from "@/lib/db/records";
 import type { BuiltContext } from "@/lib/rag/generation/context";
 import { GROUNDING_RULES } from "@/lib/rag/generation/prompts";
-import { CANDIDATE_FILTER, gatherEvidence, runLlmJson, validSources } from "./common";
+import { CANDIDATE_FILTER, fallbackReason, gatherEvidence, runLlmJson, validSources } from "./common";
 
 export const CATEGORY_INFO: Record<QuestionCategory, { label: string; description: string; queries: string[] }> = {
   recruiter: {
@@ -112,7 +112,7 @@ Return JSON: {"questions":[{"question":"...","whyAsked":"...","sources":[1]}]}`,
   );
 
   if (!outcome.data) {
-    return { questions: fallbackQuestions(input, context), context, error: outcome.error };
+    return { questions: fallbackQuestions(input, context, fallbackReason(outcome.error)), context, error: outcome.error };
   }
   return {
     context,
@@ -129,6 +129,7 @@ Return JSON: {"questions":[{"question":"...","whyAsked":"...","sources":[1]}]}`,
 function fallbackQuestions(
   input: { category: QuestionCategory; difficulty: Difficulty; count: number },
   context: BuiltContext,
+  reason: string,
 ): GeneratedQuestion[] {
   const templates = [
     (h: string) => `Tell me about "${h}". What was your role?`,
@@ -140,7 +141,7 @@ function fallbackQuestions(
     const heading = s.result.chunk.headingPath.at(-1) ?? s.result.document.name;
     return {
       question: templates[i % templates.length](heading),
-      whyAsked: "Generated from a template because no language model is connected.",
+      whyAsked: `Generated from a template — ${reason}.`,
       sources: [s.n],
       category: input.category,
       difficulty: input.difficulty,

@@ -14,6 +14,7 @@ import {
 } from "@/lib/llm/client";
 import { migrateSettings } from "@/lib/client/settings";
 import { createAsyncQueue } from "@/lib/llm/stream";
+import { fallbackReason } from "@/lib/workflows/common";
 import { isModelAllowed, modelAllowlist } from "@/lib/llm/model-policy";
 import { chatRequestSchema } from "@/lib/llm/schema";
 import { readNdjson, readSse, withStallTimeout } from "@/lib/llm/stream";
@@ -273,6 +274,18 @@ describe("automatic connection mode", () => {
     );
     await expect(resolveMode({ mode: "in-browser" })).resolves.toBe("in-browser");
     await expect(resolveMode({ mode: "browser-ollama" })).resolves.toBe("browser-ollama");
+  });
+});
+
+describe("fallback wording", () => {
+  it("distinguishes a missing model from a model that answered badly", () => {
+    expect(fallbackReason("No LLM provider is configured on the server (LLM_PROVIDER=none).")).toBe("no language model was reachable");
+    expect(fallbackReason("Cannot reach Ollama at http://localhost:11434.")).toBe("no language model was reachable");
+    expect(fallbackReason("Model output did not match the expected format (scores.evidence)")).toBe(
+      "the language model did not return usable JSON",
+    );
+    expect(fallbackReason("The language model request failed.")).toBe("the language model could not complete the request");
+    expect(fallbackReason(undefined)).toBe("generated without a language model");
   });
 });
 

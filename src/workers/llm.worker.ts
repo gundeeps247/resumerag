@@ -25,6 +25,8 @@ export interface BrowserGenerateRequest {
   messages: ChatMessage[];
   maxTokens: number;
   temperature: number;
+  /** Structured output: decode greedily, whatever the temperature. */
+  json?: boolean;
 }
 
 export interface BrowserGenerateStats {
@@ -158,8 +160,9 @@ export class BrowserLlmEngine {
       });
       const promptTokens = inputs.input_ids.dims[1];
       const streamer = new TextStreamer(tokenizer as never, { skip_prompt: true, skip_special_tokens: true, callback_function: onText });
-      // Small models follow instructions best greedily; sample only when variety is requested.
-      const sample = request.temperature >= 0.4;
+      // Small models follow instructions best greedily; sample only when variety is wanted and
+      // the shape of the reply does not matter. Sampling is the main cause of broken JSON here.
+      const sample = !request.json && request.temperature >= 0.4;
 
       this.current = requestId;
       this.stopping.reset();
