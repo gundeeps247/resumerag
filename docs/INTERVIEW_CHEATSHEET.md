@@ -33,7 +33,7 @@ Query: rewrite follow-up → embed → dense top-20 + BM25 top-20 (interview-awa
 - Eval (30 Qs, 4 unanswerable): semantic **78.8%** recall / MRR **0.71** → hybrid **88.5%** / **0.80** → + rerank **100%** / **0.894**, nDCG **0.92**, answer/refuse **96.7%**, all unanswerable refused.
 - Retrieval ~**1.3 s** in the browser (rerank dominates; **0.37 s** in Node). Was ~4.5 s until COOP/COEP headers enabled multi-threaded WASM. Generation ~**6 tok/s** on a CPU (qwen 7B).
 - Citation verification: **14/15** labelled pairs judged correctly.
-- **119** unit tests; Playwright E2E; `npm run eval`.
+- **120** unit tests; Playwright E2E; `npm run eval`.
 
 ## Terminology (one line each)
 

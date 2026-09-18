@@ -30,9 +30,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { saveQuestion } from "@/lib/client/question-bank";
 import { useSettings } from "@/lib/client/settings";
+import { fallbackReason } from "@/lib/workflows/common";
 import type { Difficulty, MockSessionRecord, MockTurn } from "@/lib/db/records";
 import { getDb } from "@/lib/db/schema";
-import { formatRelative, newId } from "@/lib/format";
+import { formatRelative, newId, capitalise } from "@/lib/format";
 import type { DetectedProject } from "@/lib/rag/analysis/projects";
 import type { BuiltContext } from "@/lib/rag/generation/context";
 import { cn } from "@/lib/utils";
@@ -93,7 +94,7 @@ function MockInterview() {
     setBusy("question");
     try {
       const q = await nextQuestion(cfg, record.turns, difficulty, settings);
-      if (q.error) toast.warning("Using a template question", { description: q.error });
+      if (q.error) toast.warning("Using a template question", { description: `${capitalise(fallbackReason(q.error))}.` });
       const turns = [...record.turns, q.turn];
       setLive((l) => ({ ...l, [turns.length - 1]: { whyAsked: q.whyAsked, context: q.context } }));
       await persist({ ...record, turns });
@@ -112,7 +113,7 @@ function MockInterview() {
     setChars(0);
     try {
       const result = await evaluateAnswer(turn, answer, settings, setChars);
-      if (result.error) toast.warning("Heuristic scoring only", { description: result.error });
+      if (result.error) toast.warning("Heuristic scoring only", { description: `${capitalise(fallbackReason(result.error))}.` });
       const turns = session.turns.map((t, i) => (i === index ? { ...t, answer, evaluation: result.evaluation } : t));
       setLive((l) => ({ ...l, [index]: { ...l[index], evalContext: result.context, stats: result.stats } }));
       await persist({ ...session, turns });

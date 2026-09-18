@@ -36,3 +36,8 @@ export function truncate(text: string, max: number): string {
 export function newId(): string {
   return crypto.randomUUID();
 }
+
+/** "no language model was reachable" → "No language model was reachable" (for toasts and notices). */
+export function capitalise(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

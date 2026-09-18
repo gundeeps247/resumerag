@@ -16,9 +16,10 @@ import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { saveQuestion } from "@/lib/client/question-bank";
 import { useSettings } from "@/lib/client/settings";
+import { fallbackReason } from "@/lib/workflows/common";
 import type { Difficulty, QuestionCategory, SavedQuestion } from "@/lib/db/records";
 import { getDb } from "@/lib/db/schema";
-import { formatRelative } from "@/lib/format";
+import { formatRelative, capitalise } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { CATEGORY_INFO, generateQuestions, type QuestionSet } from "@/lib/workflows/questions";
 
@@ -55,7 +56,7 @@ function Generator() {
     try {
       const r = await generateQuestions({ category, difficulty, count, focus: focus.trim() || undefined }, settings, setChars);
       setResult(r);
-      if (r.error) toast.warning("Used template questions", { description: r.error });
+      if (r.error) toast.warning("Used template questions", { description: `${capitalise(fallbackReason(r.error))}.` });
     } finally {
       setChars(null);
     }

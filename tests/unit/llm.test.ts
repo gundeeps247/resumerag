@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { extractJson, parseWithSchema } from "@/lib/llm/json";
+import { addMissingCommas, extractJson, parseWithSchema } from "@/lib/llm/json";
 import { OllamaProvider } from "@/lib/llm/providers/ollama";
 import { OpenAICompatibleProvider } from "@/lib/llm/providers/openai-compatible";
 import { BROWSER_MODELS, browserModelWeightsUrl, DEFAULT_BROWSER_MODEL_ID, getBrowserModel } from "@/lib/llm/browser-models";
@@ -79,6 +79,16 @@ describe("extractJson", () => {
     expect(extractJson('{"a":1}')).toEqual({ a: 1 });
     expect(extractJson('```json\n{"a":[1,2]}\n```')).toEqual({ a: [1, 2] });
     expect(extractJson('Sure! Here it is: {"ok":true} Hope this helps.')).toEqual({ ok: true });
+  });
+
+  it("repairs a missing separator between values", () => {
+    // Observed from a 1.2B model: an array item and an object member with no comma.
+    expect(extractJson('{"strengths":["clear structure" "good numbers"]}')).toEqual({ strengths: ["clear structure", "good numbers"] });
+    expect(extractJson('{"scores":{"relevance":3 "clarity":4}}')).toEqual({ scores: { relevance: 3, clarity: 4 } });
+    expect(extractJson('{"items":[{"a":1} {"b":2}]}')).toEqual({ items: [{ a: 1 }, { b: 2 }] });
+    // Valid JSON, including strings that contain braces and quotes, must be untouched.
+    expect(extractJson('{"a":"he said \\"hi\\" {not json}","b":[1,2]}')).toEqual({ a: 'he said "hi" {not json}', b: [1, 2] });
+    expect(addMissingCommas('{"a": {"b": 1}}')).toBe('{"a": {"b": 1}}');
   });
 
   it("repairs output that was cut off mid-way", () => {

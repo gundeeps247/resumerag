@@ -27,9 +27,21 @@ export function extractJson(text: string): unknown {
   const start = trimmed.search(/[{[]/);
   if (start < 0) throw new Error("No JSON found in model output.");
   const candidate = balancedSlice(trimmed, start);
-  if (candidate) return JSON.parse(candidate);
+  if (candidate) {
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      // Brackets balance, so the damage is inside: usually a missing separator.
+      return JSON.parse(addMissingCommas(candidate));
+    }
+  }
   // Output was cut off: close any open strings/brackets and try once more.
-  return JSON.parse(repairTruncated(trimmed.slice(start)));
+  const truncated = repairTruncated(trimmed.slice(start));
+  try {
+    return JSON.parse(truncated);
+  } catch {
+    return JSON.parse(addMissingCommas(truncated));
+  }
 }
 
 /** Returns the substring from `start` to its matching closing bracket, if complete. */
@@ -76,6 +88,41 @@ function repairTruncated(text: string): string {
   repaired = repaired.replace(/,?\s*"[^"]*"\s*:\s*$/, "").replace(/,\s*$/, "");
   if (stack[stack.length - 1] === "}") repaired = repaired.replace(/([{,]\s*)"[^"]*"\s*$/, "$1").replace(/,\s*$/, "");
   return repaired + stack.reverse().join("");
+}
+
+/**
+ * Small models drop the comma between array items or object members, especially when the value
+ * ends a line. Adding it back rescues output that is otherwise complete and correct.
+ */
+export function addMissingCommas(json: string): string {
+  const out: string[] = [];
+  let inString = false;
+  let escaped = false;
+  /** The last character outside a string that was not whitespace. */
+  let previous = "";
+  for (const ch of json) {
+    if (inString) {
+      out.push(ch);
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') {
+        inString = false;
+        previous = '"';
+      }
+      continue;
+    }
+    // A value cannot follow another value directly: the comma is missing.
+    if ((ch === '"' || ch === "{" || ch === "[") && endsValue(previous)) out.push(",");
+    out.push(ch);
+    if (ch === '"') inString = true;
+    if (!/\s/.test(ch)) previous = ch;
+  }
+  return out.join("");
+}
+
+/** True when the character closes a JSON value (string, object, array, number or keyword). */
+function endsValue(ch: string): boolean {
+  return ch === '"' || ch === "}" || ch === "]" || /\w/.test(ch);
 }
 
 export function parseWithSchema<T extends z.ZodType>(text: string, schema: T): z.infer<T> {
