@@ -60,7 +60,7 @@ Generic "chat with your PDF" tools answer fluently and invent freely. In intervi
 | ![JD match](docs/screenshots/jd-match.png)     | ![Mock interview feedback](docs/screenshots/mock-feedback.png)   |
 | ![Evaluation](docs/screenshots/evaluation.png) | ![Retrieval playground](docs/screenshots/playground-compare.png) |
 
-Screenshots are generated from the fictional demo workspace, with Ollama as the model — the live demo generates the same answers with the in-browser model instead, which is weaker but needs no setup. To refresh them, run the app, load the demo, and capture the pages (see [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
+Screenshots come from the fictional demo workspace on the live deployment, so the generated answers are the in-browser model's — weaker than Ollama, and shown warts and all: note the "1/3 verified" badge where it overstated a detail, and the mock interview scoring heuristically when the model's JSON could not be used. To refresh them, run the app, load the demo, and capture the pages (see [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
 
 ## Architecture
 
