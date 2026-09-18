@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { deleteDocument, reindexDocuments, setDocumentType } from "@/lib/client/documents";
+import { deleteDocument, reindexDocuments, retryDocument, setDocumentType } from "@/lib/client/documents";
 import { useSettings } from "@/lib/client/settings";
 import { formatBytes, formatRelative } from "@/lib/format";
 import { DOC_TYPE_LABELS, DOC_TYPES, type DocType, type KbDocument } from "@/lib/rag/types";
@@ -93,8 +93,9 @@ function DocumentRow({ doc, onView }: { doc: KbDocument; onView: () => void }) {
               size="xs"
               className="shrink-0"
               onClick={async () => {
-                const queued = await reindexDocuments([doc.id], settings);
-                if (!queued) toast.info("This file could not be read. Remove it and upload it again.");
+                const outcome = await retryDocument(doc.id, settings);
+                if (outcome === "needs-file") toast.info("This file could not be read. Remove it and add it again.");
+                else toast.info(outcome === "reloaded" ? `Loading ${doc.name} again` : `Re-indexing ${doc.name}`);
               }}
             >
               <RefreshCw /> Retry

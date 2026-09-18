@@ -33,6 +33,11 @@ An honest list of what ResumeRAG does not do well, why, and how a production tea
 - **Cost of the browser route:** the first answer waits for the download; quality is well below a 7B model; phones and machines without WebGPU are slow, and the weakest devices may not manage it at all (the app then falls back to evidence-only).
 - **Production fix:** dedicated inference infrastructure; the app would only change `LLM_PROVIDER`.
 
+### 4a. Indexing is tied to the page
+
+- **Current behaviour:** parsing and embedding run in the page's Web Worker, so reloading or closing the tab mid-indexing abandons the work. Those documents are marked as interrupted at startup; a demo file or one whose text was already extracted can be retried in place, but an upload interrupted before it was read must be added again — the original file is never stored.
+- **Production fix:** a SharedWorker or Service Worker that survives navigation, or storing the uploaded bytes (which would weaken the privacy guarantee) so any interrupted document can resume.
+
 ### 5. Data lives in one browser
 
 - **Current behaviour:** documents, vectors and history are in IndexedDB. Another browser or device starts empty; clearing site data deletes everything; there is no backup.

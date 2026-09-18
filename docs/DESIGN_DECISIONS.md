@@ -324,6 +324,8 @@ Measured on a laptop AMD integrated GPU; a discrete GPU or Apple Silicon is seve
 
 **Trade-off:** closing and reopening within a minute keeps the demo, which also means an accidental close or a browser restart does not throw away a session in progress. The loader waits for the startup reconciliation first, so returning with a stale demo cannot leave the visitor with documents that were skipped as duplicates and then deleted.
 
+**Interrupted indexing.** Ingestion runs in the page's Web Worker, so a reload abandons whatever was in flight. Startup housekeeping (`failInterruptedIngestion`) marks those documents as failed rather than leaving a spinner that never ends, and what the row offers depends on how far the document got: with its text already stored it can be re-indexed; a demo file is fetched again (it ships with the app); an upload interrupted before it was read has to be added again, because original files are deliberately never stored (§1). The housekeeping runs before anything new is queued, and the demo session is marked active _before_ its documents are written — otherwise a reload mid-load would find documents with no heartbeat and delete them as leftovers.
+
 **Tested:** `tests/unit/demo-session.test.ts` runs the cleanup against a real IndexedDB (fake-indexeddb) and asserts that demo documents, text, vectors and tagged records go while the visitor's own document, chat, session, question and analysis stay; a browser test loads the demo, reloads, closes the browser and reopens to confirm it is gone.
 
 ## 28. Ideas evaluated and rejected (or deferred)

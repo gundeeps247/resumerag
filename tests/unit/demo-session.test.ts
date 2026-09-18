@@ -6,6 +6,7 @@
 import "fake-indexeddb/auto";
 import { beforeEach, describe, expect, it } from "vitest";
 import { hasDemoDocuments, isDemoStale, removeDemoWorkspace, STALE_AFTER_MS } from "@/lib/client/demo-session";
+import { failInterruptedIngestion } from "@/lib/client/documents";
 import { getDb } from "@/lib/db/schema";
 import type { KbDocument } from "@/lib/rag/types";
 
@@ -138,5 +139,55 @@ describe("detecting that the site was closed", () => {
     // A tab that refreshed the heartbeat seconds ago is still open: keep its demo.
     expect(isDemoStale(now - 5_000, now)).toBe(false);
     expect(isDemoStale(now, now)).toBe(false);
+  });
+});
+
+describe("indexing interrupted by a page reload", () => {
+  /** Ingestion runs in the page's worker, so a reload abandons whatever was still in flight. */
+  it("marks documents left mid-indexing as failed, so the row offers Retry again", async () => {
+    const db = getDb();
+    await Promise.all(db.tables.map((t) => t.clear()));
+    await db.documents.bulkAdd([
+      { ...doc("queued", "upload"), status: "queued", progress: 0 },
+      { ...doc("parsing", "upload"), status: "parsing", progress: 10 },
+      { ...doc("embedding", "demo"), status: "embedding", progress: 60 },
+      { ...doc("done", "upload"), status: "ready" },
+      { ...doc("failed", "upload"), status: "error", error: "Unsupported file." },
+    ]);
+
+    expect(await failInterruptedIngestion()).toBe(3);
+
+    const byId = new Map((await db.documents.toArray()).map((d) => [d.id, d]));
+    for (const id of ["queued", "parsing", "embedding"]) {
+      expect(byId.get(id)?.status).toBe("error");
+    }
+    // An upload interrupted before its text was stored cannot be retried: the original file is
+    // never kept, so the message must ask for the file rather than promise a retry.
+    expect(byId.get("queued")?.error).toMatch(/add the file again/i);
+    expect(byId.get("parsing")?.error).toMatch(/add the file again/i);
+    // A demo file ships with the app, so it can always be fetched again.
+    expect(byId.get("embedding")?.error).toMatch(/retry to finish it/i);
+    // Finished and already-failed documents are left exactly as they were.
+    expect(byId.get("done")?.status).toBe("ready");
+    expect(byId.get("failed")?.error).toBe("Unsupported file.");
+  });
+
+  it("offers a retry for an upload whose text was already stored", async () => {
+    const db = getDb();
+    await Promise.all(db.tables.map((t) => t.clear()));
+    await db.documents.add({ ...doc("half", "upload"), status: "embedding", progress: 70 });
+    await db.contents.add({ docId: "half", title: "half", blocks: [], pageCount: 1 });
+
+    await failInterruptedIngestion();
+
+    expect((await db.documents.get("half"))?.error).toMatch(/retry to finish it/i);
+  });
+
+  it("does nothing when every document is settled", async () => {
+    const db = getDb();
+    await Promise.all(db.tables.map((t) => t.clear()));
+    await db.documents.add({ ...doc("done", "upload"), status: "ready" });
+    expect(await failInterruptedIngestion()).toBe(0);
+    expect((await db.documents.get("done"))?.status).toBe("ready");
   });
 });

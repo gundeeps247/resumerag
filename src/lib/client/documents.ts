@@ -146,6 +146,10 @@ export async function loadDemoWorkspace(settings: AppSettings): Promise<AddResul
   // Startup housekeeping first, so a demo left by a previous visit is cleared and these
   // documents are not skipped as duplicates and then deleted.
   await ensureStartupCleanup();
+  // Then mark this visit as a demo visit *before* writing anything. Otherwise a reload while
+  // the documents are still being added would find them with no heartbeat and delete them as
+  // leftovers from a previous visit.
+  startDemoSession();
   const files = await Promise.all(
     DEMO_DOCUMENTS.map(async (demo) => {
       const response = await fetch(`/demo/${demo.file}`);
@@ -153,10 +157,7 @@ export async function loadDemoWorkspace(settings: AppSettings): Promise<AddResul
       return { name: demo.file, bytes: new Uint8Array(await response.arrayBuffer()), docType: demo.docType, source: "demo" as const };
     }),
   );
-  const result = await addFiles(files, settings);
-  // From here on, anything the visitor creates is demo material too.
-  startDemoSession();
-  return result;
+  return addFiles(files, settings);
 }
 
 /**
@@ -168,16 +169,49 @@ export async function loadDemoWorkspace(settings: AppSettings): Promise<AddResul
 export async function failInterruptedIngestion(): Promise<number> {
   const db = getDb();
   const stuck = await db.documents.filter((d) => d.status !== "ready" && d.status !== "error").toArray();
+  if (!stuck.length) return 0;
+  // What can be recovered depends on how far the document got: once its text is stored it can
+  // be re-indexed, and a demo file can always be fetched again — but an uploaded file that was
+  // interrupted before it was read is gone, because original files are never stored.
+  const withText = new Set((await db.contents.bulkGet(stuck.map((d) => d.id))).filter((c) => c !== undefined).map((c) => c!.docId));
   await Promise.all(
     stuck.map((d) =>
       db.documents.update(d.id, {
         status: "error" as const,
-        error: "Indexing stopped when the page reloaded. Retry to finish it.",
+        error:
+          withText.has(d.id) || d.source === "demo"
+            ? "Indexing stopped when the page reloaded. Retry to finish it."
+            : "Indexing stopped before this file was read. Add the file again.",
         updatedAt: Date.now(),
       }),
     ),
   );
   return stuck.length;
+}
+
+export type RetryOutcome = "reindexed" | "reloaded" | "needs-file";
+
+/**
+ * Finishes a document whose indexing failed. The stored text is reused when it exists; a demo
+ * file is simply fetched again (it ships with the app); an uploaded file that was never read
+ * cannot be recovered, because the original bytes are deliberately not kept.
+ */
+export async function retryDocument(docId: string, settings: AppSettings): Promise<RetryOutcome> {
+  const db = getDb();
+  const doc = await db.documents.get(docId);
+  if (!doc) return "needs-file";
+  if (await db.contents.get(docId)) {
+    return (await reindexDocuments([docId], settings)) ? "reindexed" : "needs-file";
+  }
+  if (doc.source === "demo") {
+    const response = await fetch(`/demo/${doc.name}`);
+    if (!response.ok) return "needs-file";
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    await deleteDocument(docId);
+    const result = await addFiles([{ name: doc.name, bytes, docType: doc.docType, source: "demo" }], settings);
+    return result.added.length ? "reloaded" : "needs-file";
+  }
+  return "needs-file";
 }
 
 let startup: Promise<void> | undefined;
