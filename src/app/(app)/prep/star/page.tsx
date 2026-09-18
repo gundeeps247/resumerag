@@ -17,7 +17,7 @@ export default function StarPage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="Prep studio"
+        eyebrow="Prep tools"
         title="STAR answer builder"
         description="Structures a behavioural answer from experiences in your documents. Facts from your documents and suggested wording are kept visibly separate — nothing is invented."
       />

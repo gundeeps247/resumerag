@@ -16,7 +16,7 @@ export default function ConsistencyPage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="Prep studio"
+        eyebrow="Prep tools"
         title="Consistency checker"
         description="Interviewers compare your resume with your reports and with what you say. This finds numbers that disagree across your documents so you can fix them — or explain them — first."
       />

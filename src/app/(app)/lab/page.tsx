@@ -40,7 +40,7 @@ export default function PlaygroundPage() {
   return (
     <PageContainer wide>
       <PageHeader
-        eyebrow="RAG lab"
+        eyebrow="Under the hood"
         title="Retrieval playground"
         description="Change one knob at a time and watch how the retrieved evidence changes. Custom chunk sizes build a temporary index — your real knowledge base is not modified."
       />

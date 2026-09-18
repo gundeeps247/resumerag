@@ -42,7 +42,7 @@ export default function ResumeXrayPage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="Prep studio"
+        eyebrow="Prep tools"
         title="Resume X-ray"
         description="Each bullet on your resume is a claim an interviewer can challenge. The rules below are deterministic and explainable; the interviewer questions are generated from your documents."
       />

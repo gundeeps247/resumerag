@@ -51,7 +51,7 @@ export default function MockInterviewPage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="Interview prep"
+        eyebrow="Practise"
         title="Mock interview"
         description="The interviewer asks questions grounded in your documents, scores each answer on a rubric, checks your claims against your own documents, and adapts the difficulty."
       />

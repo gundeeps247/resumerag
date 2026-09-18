@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { FlaskRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { loadDemoWorkspace } from "@/lib/client/documents";
 import { useSettings } from "@/lib/client/settings";
 
@@ -40,7 +41,7 @@ export function LoadDemoButton({
 
   return (
     <Button variant={variant} onClick={() => void load()} disabled={busy}>
-      <FlaskRound /> {label}
+      {busy ? <Spinner /> : <FlaskRound />} {busy ? "Loading demo…" : label}
     </Button>
   );
 }

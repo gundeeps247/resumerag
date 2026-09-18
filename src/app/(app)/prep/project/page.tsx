@@ -29,7 +29,7 @@ export default function ProjectDeepDivePage() {
   return (
     <PageContainer wide>
       <PageHeader
-        eyebrow="Prep studio"
+        eyebrow="Prep tools"
         title="Project deep dive"
         description="Pick a project or role. See what your documents actually say about it, explain it at five levels of depth, and practise progressively harder follow-ups."
       />

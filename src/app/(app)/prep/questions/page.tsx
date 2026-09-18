@@ -28,7 +28,7 @@ export default function QuestionsPage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="Prep studio"
+        eyebrow="Prep tools"
         title="Question generator"
         description="Questions tailored to your documents — every question points at the passage that prompted it."
       />

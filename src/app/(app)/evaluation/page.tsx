@@ -71,7 +71,7 @@ export default function EvaluationPage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="RAG lab"
+        eyebrow="Under the hood"
         title="Evaluation"
         description="A RAG system should be measured, not assumed. Each retrieval strategy is scored on 30 labelled questions over the fictional demo documents — including four questions whose answer is deliberately not in the documents."
         actions={
