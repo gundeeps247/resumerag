@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { ensureDemoReconciled } from "@/lib/client/demo-session";
+import { ensureStartupCleanup } from "@/lib/client/documents";
+import { demoWasRemoved } from "@/lib/client/demo-session";
 import { getRag } from "@/lib/client/rag-client";
 import { useSettings } from "@/lib/client/settings";
 import { useKbStats } from "@/hooks/use-kb";
@@ -24,8 +25,8 @@ export function RagBridge() {
   }, [embeddingModelId, device]);
 
   useEffect(() => {
-    void ensureDemoReconciled().then((outcome) => {
-      if (outcome === "removed") {
+    void ensureStartupCleanup().then(() => {
+      if (demoWasRemoved()) {
         toast.info("Demo documents removed", {
           description: "The fictional demo workspace is cleared when you close the site. Load it again whenever you like.",
         });

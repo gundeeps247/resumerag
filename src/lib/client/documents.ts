@@ -143,9 +143,9 @@ export async function addPastedText(title: string, text: string, docType: DocTyp
 
 /** Loads the fictional "Alex Rivera" demo documents. */
 export async function loadDemoWorkspace(settings: AppSettings): Promise<AddResult> {
-  // A demo left by a previous visit is cleared first, so these documents are not skipped as
-  // duplicates and then deleted by the startup cleanup.
-  await ensureDemoReconciled();
+  // Startup housekeeping first, so a demo left by a previous visit is cleared and these
+  // documents are not skipped as duplicates and then deleted.
+  await ensureStartupCleanup();
   const files = await Promise.all(
     DEMO_DOCUMENTS.map(async (demo) => {
       const response = await fetch(`/demo/${demo.file}`);
@@ -157,6 +157,42 @@ export async function loadDemoWorkspace(settings: AppSettings): Promise<AddResul
   // From here on, anything the visitor creates is demo material too.
   startDemoSession();
   return result;
+}
+
+/**
+ * Ingestion runs in the page's Web Worker, so reloading while documents are being indexed
+ * leaves them in a working state with no worker to finish them — a spinner that never ends.
+ * At startup they are marked as interrupted instead, which is honest and restores the row's
+ * Retry action (the parsed text is kept, so retrying needs no new upload).
+ */
+export async function failInterruptedIngestion(): Promise<number> {
+  const db = getDb();
+  const stuck = await db.documents.filter((d) => d.status !== "ready" && d.status !== "error").toArray();
+  await Promise.all(
+    stuck.map((d) =>
+      db.documents.update(d.id, {
+        status: "error" as const,
+        error: "Indexing stopped when the page reloaded. Retry to finish it.",
+        updatedAt: Date.now(),
+      }),
+    ),
+  );
+  return stuck.length;
+}
+
+let startup: Promise<void> | undefined;
+
+/**
+ * One-time startup housekeeping, awaited by everything that touches the knowledge base so the
+ * order is guaranteed: flag documents a previous page left mid-indexing, then settle the demo
+ * workspace (a stale one is deleted) before anything new is queued.
+ */
+export function ensureStartupCleanup(): Promise<void> {
+  startup ??= (async () => {
+    await failInterruptedIngestion();
+    await ensureDemoReconciled();
+  })();
+  return startup;
 }
 
 export async function deleteDocument(docId: string): Promise<void> {

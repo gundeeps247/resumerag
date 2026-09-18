@@ -114,6 +114,12 @@ export async function removeDemoWorkspace(): Promise<number> {
 }
 
 let reconciliation: Promise<"kept" | "removed" | "none"> | undefined;
+let removedOnStartup = false;
+
+/** Whether the startup reconciliation deleted a demo left by a previous visit. */
+export function demoWasRemoved(): boolean {
+  return removedOnStartup;
+}
 
 /**
  * Runs the startup reconciliation exactly once per page load, and lets anything that touches
@@ -136,6 +142,7 @@ export async function reconcileDemoWorkspace(): Promise<"kept" | "removed" | "no
   }
   if (isDemoStale(readHeartbeat())) {
     await removeDemoWorkspace();
+    removedOnStartup = true;
     return "removed";
   }
   startDemoSession();

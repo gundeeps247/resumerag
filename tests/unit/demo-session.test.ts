@@ -61,8 +61,27 @@ async function seed() {
     { id: "s-mine", title: "mine", focus: "{}", status: "completed", createdAt: 1, updatedAt: 1, turns: [] },
   ]);
   await db.questions.bulkAdd([
-    { id: "q-demo", question: "a", category: "technical", difficulty: "medium", sourceChunkIds: [], status: "new", origin: "t", createdAt: 1, demo: true },
-    { id: "q-mine", question: "b", category: "technical", difficulty: "medium", sourceChunkIds: [], status: "new", origin: "t", createdAt: 1 },
+    {
+      id: "q-demo",
+      question: "a",
+      category: "technical",
+      difficulty: "medium",
+      sourceChunkIds: [],
+      status: "new",
+      origin: "t",
+      createdAt: 1,
+      demo: true,
+    },
+    {
+      id: "q-mine",
+      question: "b",
+      category: "technical",
+      difficulty: "medium",
+      sourceChunkIds: [],
+      status: "new",
+      origin: "t",
+      createdAt: 1,
+    },
   ]);
   await db.analyses.bulkAdd([
     { id: "a-demo", kind: "resume-xray", title: "demo", createdAt: 1, kbVersion: 1, result: {}, demo: true },

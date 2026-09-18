@@ -30,7 +30,8 @@ import { LoadDemoButton } from "@/components/documents/demo-button";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useKbStats, type KbStats } from "@/hooks/use-kb";
-import { loadDemoWorkspace } from "@/lib/client/documents";
+import { hasDemoDocuments } from "@/lib/client/demo-session";
+import { ensureStartupCleanup, loadDemoWorkspace } from "@/lib/client/documents";
 import { useSettings } from "@/lib/client/settings";
 import type { MockSessionRecord, SavedAnalysis, SavedQuestion } from "@/lib/db/records";
 import { getDb, type MessageRecord } from "@/lib/db/schema";
@@ -75,11 +76,15 @@ function Home() {
 
   // The landing page links to /dashboard?demo=1 to load the demo workspace in one click.
   useEffect(() => {
-    if (params.get("demo") !== "1" || !stats || demoStarted.current) return;
+    if (params.get("demo") !== "1" || demoStarted.current) return;
     demoStarted.current = true;
-    const load = stats.documents === 0 ? loadDemoWorkspace(settings) : Promise.resolve();
-    void load.finally(() => router.replace("/dashboard"));
-  }, [params, stats, settings, router]);
+    void (async () => {
+      // Wait for the startup cleanup: a demo left by a previous visit is deleted first, so
+      // "try the demo" always ends with a demo rather than with documents about to be removed.
+      await ensureStartupCleanup();
+      if (!(await hasDemoDocuments())) await loadDemoWorkspace(settings);
+    })().finally(() => router.replace("/dashboard"));
+  }, [params, settings, router]);
 
   if (!stats || !data) return <PageSkeleton />;
 
