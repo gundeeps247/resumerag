@@ -47,12 +47,36 @@ const CATEGORY_BY_FOCUS: Record<MockFocus, QuestionCategory> = {
   project: "project",
 };
 
+const QUESTION_CATEGORIES = [
+  "recruiter",
+  "technical",
+  "project",
+  "behavioral",
+  "ai_ml",
+  "system_design",
+  "follow_up",
+  "challenge",
+] as const;
+
+/**
+ * Only the question itself is required. Small models label the category freely ("Project",
+ * "achievements") and sometimes skip whyAsked, and rejecting the whole reply over that would
+ * throw away a good question — so the label is normalised instead.
+ */
 const questionSchema = z.object({
-  question: z.string(),
-  category: z.enum(["recruiter", "technical", "project", "behavioral", "ai_ml", "system_design", "follow_up", "challenge"]),
-  whyAsked: z.string(),
+  question: z.string().min(1),
+  category: z.string().optional(),
+  whyAsked: z.string().default(""),
   sources: z.array(z.number().int()).max(3).default([]),
 });
+
+export function normalizeCategory(value: string | undefined, fallback: QuestionCategory): QuestionCategory {
+  const key = (value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  return (QUESTION_CATEGORIES as readonly string[]).includes(key) ? (key as QuestionCategory) : fallback;
+}
 
 export interface NextQuestion {
   turn: MockTurn;
@@ -101,10 +125,10 @@ Ask the next interview question. It must be specific to the candidate's document
       turn: {
         ...base,
         question: outcome.data.question,
-        category: outcome.data.category,
+        category: normalizeCategory(outcome.data.category, CATEGORY_BY_FOCUS[config.focus]),
         evidenceChunkIds: sources.map((n) => context.sources[n - 1].result.chunk.id),
       },
-      whyAsked: outcome.data.whyAsked,
+      whyAsked: outcome.data.whyAsked || "Drawn from the retrieved passages below.",
       context,
     };
   }

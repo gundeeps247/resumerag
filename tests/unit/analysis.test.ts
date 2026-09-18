@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { normalizeCategory } from "@/lib/workflows/mock";
 import { analyzeClaim, extractClaims, extractMetrics, flagConflicts } from "@/lib/rag/analysis/claims";
 import { extractNumericFacts, findInconsistencies } from "@/lib/rag/analysis/consistency";
 import { extractRequirements, statesAbsence } from "@/lib/rag/analysis/jd";
@@ -217,5 +218,16 @@ describe("consistency checker", () => {
       },
     ]);
     expect(claims).toEqual([]);
+  });
+});
+
+describe("mock interview question labels", () => {
+  it("accepts the labels small models actually produce, and falls back when they invent one", () => {
+    expect(normalizeCategory("technical", "project")).toBe("technical");
+    expect(normalizeCategory("Project", "technical")).toBe("project");
+    expect(normalizeCategory("system design", "technical")).toBe("system_design");
+    expect(normalizeCategory("AI/ML", "technical")).toBe("technical"); // not a known label
+    expect(normalizeCategory("achievements", "behavioral")).toBe("behavioral");
+    expect(normalizeCategory(undefined, "recruiter")).toBe("recruiter");
   });
 });
