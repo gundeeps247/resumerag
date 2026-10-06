@@ -16,10 +16,19 @@ Upload your resume, project reports, notes and job descriptions. ResumeRAG build
 
 > **In one sentence:** a retrieval-augmented generation (RAG) system that parses, chunks, embeds and searches your documents entirely client-side, then has a language model — by default a small one running in the same browser tab — answer _only_ from the retrieved passages, with citations, confidence gating, citation verification, and interview-specific workflows on top.
 
+## What it tests, and what it found
+
+- **The question.** Can a document Q&A system be made to refuse when the documents do not hold the answer, and which stage of the pipeline makes that happen?
+- **How it was measured.** 30 labelled questions over six fictional documents, four of them deliberately unanswerable, run through four retrieval configurations. Reproduce with `npm run eval`.
+- **What can be claimed.** With hybrid search and cross-encoder reranking, every fact needed for the 26 answerable questions was in the top five passages, and all four unanswerable questions were refused. Keyword search alone refused none of them. One answerable question is still wrongly refused.
+- **What cannot.** The test set is small and synthetic, and the same author wrote the documents and the questions. The figures show the method working on this set; they are not a benchmark. Full table in [Evaluation](#evaluation).
+- **How it was built.** Most of the code was written with an AI coding tool. See [Author](#author).
+
 ---
 
 ## Contents
 
+- [What it tests, and what it found](#what-it-tests-and-what-it-found) · [Author](#author)
 - [Why this project](#why-this-project) · [Features](#features) · [Screenshots](#screenshots)
 - [Architecture](#architecture) · [RAG pipeline](#the-rag-pipeline) · [Evaluation](#evaluation)
 - [Tech stack](#tech-stack) · [Project structure](#project-structure)
@@ -60,7 +69,7 @@ Generic "chat with your PDF" tools answer fluently and invent freely. In intervi
 | ![JD match](docs/screenshots/jd-match.png)     | ![Mock interview feedback](docs/screenshots/mock-feedback.png)   |
 | ![Evaluation](docs/screenshots/evaluation.png) | ![Retrieval playground](docs/screenshots/playground-compare.png) |
 
-Screenshots come from the fictional demo workspace on the live deployment, so the generated answers are the in-browser model's — weaker than Ollama, and shown warts and all: note the "1/3 verified" badge where it overstated a detail, and the mock interview scoring heuristically when the model's JSON could not be used. To refresh them, run the app, load the demo, and capture the pages (see [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
+Screenshots come from the fictional demo workspace on the live deployment, so the generated answers are the in-browser model's — weaker than Ollama, and shown warts and all: note the "1/3 verified" badge where it overstated a detail, and the mock interview scoring heuristically when the model's JSON could not be used. To refresh them, run the app, load the demo, and capture the pages.
 
 ## Architecture
 
@@ -71,18 +80,21 @@ flowchart LR
   subgraph Browser["Browser — your device"]
     UI["Next.js UI<br/>(React 19, shadcn/ui)"]
     W["RAG Web Worker<br/>parse · chunk · embed<br/>search · rerank · evaluate"]
+    G["LLM Web Worker<br/>LFM2 1.2B · WebGPU or WASM<br/>answers when no server model is set"]
     DB[("IndexedDB (Dexie)<br/>documents · chunks · vectors<br/>chats · sessions")]
     UI <-->|Comlink RPC| W
+    UI <-->|Comlink RPC| G
     W <--> DB
     UI <-->|live queries| DB
   end
   HUB["Hugging Face Hub<br/>model weights (first run only)"] -. download & cache .-> W
+  HUB -. download & cache .-> G
   subgraph Server["Next.js route handlers (local or Vercel)"]
     API["POST /api/llm/chat<br/>validation · rate limit · streaming"]
     STATUS["GET /api/llm/status"]
   end
   UI -->|question + top-K passages| API
-  API --> LLM["LLM provider<br/>Ollama (default) · OpenAI-compatible · Hugging Face"]
+  API --> LLM["LLM provider (optional)<br/>Ollama (local default) · OpenAI-compatible · Hugging Face"]
   UI -. "private mode: direct to local Ollama" .-> LLM
 ```
 
@@ -178,8 +190,8 @@ src/
 │   ├── db/                   # IndexedDB schema (Dexie) and record types
 │   ├── client/               # Worker client, settings store, knowledge-base operations
 │   └── server/               # Server-only env validation, provider factory, rate limiter
-└── workers/rag.worker.ts     # The RAG engine Web Worker
-scripts/                      # generate-demo-docs.ts, eval.ts
+└── workers/                  # rag.worker.ts (the RAG engine) and llm.worker.ts (the in-browser language model)
+scripts/                      # generate-demo-docs.ts, eval.ts, llm-bench/ (the in-browser model comparison)
 public/demo/                  # Fictional demo documents (Alex Rivera)
 public/eval/                  # Reference evaluation results
 tests/unit, tests/e2e         # Vitest and Playwright
@@ -193,7 +205,7 @@ A file-by-file tour is in [`docs/CODEBASE_GUIDE.md`](docs/CODEBASE_GUIDE.md).
 **Prerequisites:** Node.js 20.9+ (22 recommended) and npm. Nothing else: without any model configured the app generates answers with a small open-weight model **in the browser**. [Ollama](https://ollama.com) is optional and gives better answers.
 
 ```bash
-git clone <your-fork-url> resumerag
+git clone https://github.com/gundeeps247/resumerag.git
 cd resumerag
 npm install
 cp .env.example .env.local      # optional; defaults work with local Ollama
@@ -310,7 +322,7 @@ Scanned PDFs need OCR (not included); complex tables and multi-column layouts ar
 
 ## Roadmap
 
-OCR for scanned PDFs (tesseract.js) · NLI-based citation verification · LLM-based query expansion for the remaining abstract questions · optional encrypted sync with Postgres + pgvector and authentication · fully in-browser generation with WebLLM · speech-based mock interviews with in-browser Whisper · spaced repetition for the question bank.
+OCR for scanned PDFs (tesseract.js) · NLI-based citation verification · LLM-based query expansion for the remaining abstract questions · optional encrypted sync with Postgres + pgvector and authentication · grammar-constrained JSON decoding for the in-browser model · speech-based mock interviews with in-browser Whisper · spaced repetition for the question bank.
 
 ## Documentation
 
@@ -321,14 +333,15 @@ OCR for scanned PDFs (tesseract.js) · NLI-based citation verification · LLM-ba
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)                         | Detailed diagrams of every flow                                                |
 | [`docs/CODEBASE_GUIDE.md`](docs/CODEBASE_GUIDE.md)                     | Where everything lives, file by file                                           |
 | [`docs/DESIGN_DECISIONS.md`](docs/DESIGN_DECISIONS.md)                 | Options considered, choices made, trade-offs                                   |
-| [`docs/INTERVIEW_GUIDE.md`](docs/INTERVIEW_GUIDE.md)                   | 58 interview questions about this project with answers                         |
-| [`docs/INTERVIEW_CHEATSHEET.md`](docs/INTERVIEW_CHEATSHEET.md)         | 5-minute revision before an interview                                          |
-| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)                           | A 3–5 minute demo, with what to say                                            |
 | [`docs/LIMITATIONS_AND_ROADMAP.md`](docs/LIMITATIONS_AND_ROADMAP.md)   | Honest limitations and how to fix them                                         |
+
+## Author
+
+Built by [Gundeep Singh](https://github.com/gundeeps247). Most of the code was written with [Claude Code](https://claude.com/claude-code), an AI coding tool, and every commit records that co-authorship.
 
 ## Acknowledgements
 
-Models: [BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5), [cross-encoder/ms-marco-MiniLM-L-6-v2](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) (ONNX conversions by [Xenova](https://huggingface.co/Xenova)), Qwen2.5 and Llama 3.2 via [Ollama](https://ollama.com). Libraries: [Transformers.js](https://github.com/huggingface/transformers.js), [unpdf](https://github.com/unjs/unpdf), [mammoth](https://github.com/mwilliamson/mammoth.js), [Dexie](https://dexie.org), [Comlink](https://github.com/GoogleChromeLabs/comlink), [shadcn/ui](https://ui.shadcn.com).
+Models: [BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5), [cross-encoder/ms-marco-MiniLM-L-6-v2](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) (ONNX conversions by [Xenova](https://huggingface.co/Xenova)), [LFM2](https://huggingface.co/LiquidAI/LFM2-1.2B) by Liquid AI for in-browser generation (ONNX conversion by [onnx-community](https://huggingface.co/onnx-community)), Qwen2.5 and Llama 3.2 via [Ollama](https://ollama.com). Libraries: [Transformers.js](https://github.com/huggingface/transformers.js), [unpdf](https://github.com/unjs/unpdf), [mammoth](https://github.com/mwilliamson/mammoth.js), [Dexie](https://dexie.org), [Comlink](https://github.com/GoogleChromeLabs/comlink), [shadcn/ui](https://ui.shadcn.com).
 
 All demo data (the persona "Alex Rivera", Finlytics, CartWave, Northwind Analytics) is fictional, and the demo workspace exists only while the site is open: loading it is always an explicit choice, and it — with any chats, mock interviews, saved questions or analyses made from it — is deleted on the next visit.
 

@@ -306,7 +306,7 @@ Measured on a laptop AMD integrated GPU; a discrete GPU or Apple Silicon is seve
 
 **Decision:** every workflow computes as much as possible without an LLM (rules, retrieval, extraction), then uses one compact LLM call for synthesis, with a deterministic fallback.
 
-**Why:** local models are slow and imperfect; deterministic results are instant, explainable and testable, and the app remains useful in evidence-only mode. It also makes the system easier to defend in an interview: _"the model never decides whether a skill is matched — retrieval evidence does."_
+**Why:** local models are slow and imperfect; deterministic results are instant, explainable and testable, and the app remains useful in evidence-only mode. It also makes the system easier to reason about: the model never decides whether a skill is matched — retrieval evidence does.
 
 ## 26. Prompt-injection defences
 

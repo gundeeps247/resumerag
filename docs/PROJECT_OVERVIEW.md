@@ -174,7 +174,7 @@ transaction. Failures are per-document and retryable; re-indexing reuses the sto
 
 ## 5. The decisions that matter
 
-The full list is in [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md); these are the ones worth defending out loud.
+The full list is in [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md); these are the ones that shaped the system most.
 
 | #   | Decision                                                               | Alternative rejected                                    | Why, and the evidence                                                                                                                                                                                                                                                     |
 | --- | ---------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -250,15 +250,15 @@ most RAG demos never show: BM25 alone happily answers questions about jobs you n
 
 ## 8. Engineering
 
-| Area            | Detail                                                                                                                                                                                                                                                                                            |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Stack           | Next.js 16 (App Router, React 19, Turbopack), TypeScript strict, Tailwind 4 + shadcn/ui, Dexie, Comlink, Transformers.js, zod 4                                                                                                                                                                   |
-| Size            | ~18.6k lines of TypeScript/TSX; the framework-independent RAG core is ~7.4k of that                                                                                                                                                                                                               |
-| Structure       | `src/lib/rag` (pure pipeline: parsing, chunking, embeddings, retrieval, reranking, generation, analysis, evaluation) · `src/lib/workflows` (feature logic) · `src/lib/llm` (providers plus the in-browser model) · `src/workers` (RAG and LLM workers) · `src/app` (19 routes) · `src/components` |
-| Portability     | The RAG core depends on neither React, Next.js nor IndexedDB, so the identical code runs in the browser worker, in Node (`npm run eval`) and in unit tests                                                                                                                                        |
-| Tests           | 128 unit tests (chunking, parsing, BM25, fusion, expansion, retrieval, confidence, citation verification, analysis rules, JD scoring, LLM providers, API validation) plus a Playwright end-to-end test that ingests the demo set, asks a question and asserts both a citation and a refusal       |
-| Quality gates   | `npm run check` = typecheck + lint + tests + build; Prettier; GitHub Actions CI runs all four                                                                                                                                                                                                     |
-| Reproducibility | `npm run demo:generate` builds the sample PDFs/DOCX; `npm run eval` regenerates the benchmark the app displays                                                                                                                                                                                    |
+| Area            | Detail                                                                                                                                                                                                                                                                                                         |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stack           | Next.js 16 (App Router, React 19, Turbopack), TypeScript strict, Tailwind 4 + shadcn/ui, Dexie, Comlink, Transformers.js, zod 4                                                                                                                                                                                |
+| Size            | ~20k lines of TypeScript/TSX in `src`; `src/lib` is ~7.6k of that, and the framework-independent RAG core in `src/lib/rag` ~3.9k                                                                                                                                                                               |
+| Structure       | `src/lib/rag` (pure pipeline: parsing, chunking, embeddings, retrieval, reranking, generation, analysis, evaluation) · `src/lib/workflows` (feature logic) · `src/lib/llm` (providers plus the in-browser model) · `src/workers` (RAG and LLM workers) · `src/app` (15 pages, 2 API routes) · `src/components` |
+| Portability     | The RAG core depends on neither React, Next.js nor IndexedDB, so the identical code runs in the browser worker, in Node (`npm run eval`) and in unit tests                                                                                                                                                     |
+| Tests           | 128 unit tests (chunking, parsing, BM25, fusion, expansion, retrieval, confidence, citation verification, analysis rules, JD scoring, LLM providers, API validation) plus a Playwright end-to-end test that ingests the demo set, asks a question and asserts both a citation and a refusal                    |
+| Quality gates   | `npm run check` = typecheck + lint + tests + build; Prettier; GitHub Actions CI runs all four                                                                                                                                                                                                                  |
+| Reproducibility | `npm run demo:generate` builds the sample PDFs/DOCX; `npm run eval` regenerates the benchmark the app displays                                                                                                                                                                                                 |
 
 ---
 
@@ -306,7 +306,4 @@ the chunk-size sweep) · `npm run demo:generate` (rebuild the demo documents) ·
 | [ARCHITECTURE.md](ARCHITECTURE.md)                         | Diagrams: system, ingestion, chunking, retrieval, generation, data model                           |
 | [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md)                 | 28 decisions with alternatives, evidence and trade-offs                                            |
 | [CODEBASE_GUIDE.md](CODEBASE_GUIDE.md)                     | File-by-file tour and how to extend it                                                             |
-| [INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md)                   | 58 questions an interviewer could ask about this project, answered                                 |
-| [INTERVIEW_CHEATSHEET.md](INTERVIEW_CHEATSHEET.md)         | One page to read before the interview                                                              |
-| [DEMO_SCRIPT.md](DEMO_SCRIPT.md)                           | A five-minute live demo, minute by minute                                                          |
 | [LIMITATIONS_AND_ROADMAP.md](LIMITATIONS_AND_ROADMAP.md)   | Every known weakness and what a production team would do about it                                  |

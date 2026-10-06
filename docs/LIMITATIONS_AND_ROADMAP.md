@@ -1,6 +1,6 @@
 # Limitations and roadmap
 
-An honest list of what ResumeRAG does not do well, why, and how a production team would solve it. Being able to talk about these is as valuable in an interview as the features.
+An honest list of what ResumeRAG does not do well, why, and how a production team would solve it.
 
 ---
 
