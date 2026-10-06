@@ -29,6 +29,9 @@ import report from "../../public/eval/reference-results.json";
 const best = report.runs.find((r) => r.config.id === "hybrid_rerank")!;
 const baseline = report.runs.find((r) => r.config.id === "keyword")!;
 
+const REPO_URL = "https://github.com/gundeeps247/resumerag";
+const AUTHOR_URL = "https://github.com/gundeeps247";
+
 const PIPELINE = [
   { icon: FileText, title: "Parse", text: "PDF, DOCX, Markdown and text become headings, paragraphs and bullets — with page numbers." },
   { icon: Layers, title: "Chunk", text: "Structure-aware chunks that never mix two sections, each tagged with its heading path." },
@@ -99,6 +102,9 @@ export default function LandingPage() {
             </a>
             <a href="#privacy" className="hover:text-foreground">
               Privacy
+            </a>
+            <a href={REPO_URL} target="_blank" rel="noreferrer" className="hover:text-foreground">
+              GitHub
             </a>
           </nav>
           <Button asChild size="sm">
@@ -299,7 +305,17 @@ export default function LandingPage() {
 
       <footer className="border-t">
         <div className="text-muted-foreground mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <span>ResumeRAG — an open-source RAG project. All demo data is fictional.</span>
+          <span>
+            ResumeRAG — an open-source RAG project by{" "}
+            <a href={AUTHOR_URL} target="_blank" rel="noreferrer" className="hover:text-foreground underline underline-offset-2">
+              Gundeep Singh
+            </a>{" "}
+            ·{" "}
+            <a href={REPO_URL} target="_blank" rel="noreferrer" className="hover:text-foreground underline underline-offset-2">
+              Source on GitHub
+            </a>{" "}
+            · All demo data is fictional.
+          </span>
           <span>Next.js · Transformers.js · ONNX Runtime · Ollama · IndexedDB</span>
         </div>
       </footer>
